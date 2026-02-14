@@ -1,163 +1,1026 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>業務用タイムカード</title>
-<style>
-body { font-family: sans-serif; padding:20px; background:#f5f5f5; }
-h2 { margin-bottom:5px; }
-button { padding:8px 14px; margin:5px 5px 5px 0; }
-select { padding:5px; }
-table { border-collapse: collapse; width:100%; margin-top:15px; background:white;}
-th, td { border:1px solid #ccc; padding:6px; text-align:center; }
-th { background:#eee; }
-.summary { margin-top:15px; font-weight:bold; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <title>タイムカード</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuOCv+OCpOODoOOCq+ODvOODiSIsCiAgInNob3J0X25hbWUiOiAi44K/44Kk44Og44Kr44O844OJIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmZmZmZmYiLAogICJ0aGVtZV9jb2xvciI6ICIjNjY3ZWVhIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIGZpbGw9JyU2NjdlZWEnLyUzRSUzQ3RleHQgeD0nNTAlMjUnIHk9JzUwJTI1JyBmb250LXNpemU9JzEyMCcgZmlsbD0nJWZmZicgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J2NlbnRyYWwnJTNF8J+TseKPsSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyUzRSUzQ3JlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIGZpbGw9JyU2NjdlZWEnLyUzRSUzQ3RleHQgeD0nNTAlMjUnIHk9JzUwJTI1JyBmb250LXNpemU9JzM2MCcgZmlsbD0nJWZmZicgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J2NlbnRyYWwnJTNF8J+TseKPsSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0KICBdCn0=">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .user-select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .clock-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-clock-in {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .btn-clock-out {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(238, 9, 121, 0.4);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+
+        .current-status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .status-working {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-off {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .record-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .record-details {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .location-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .user-list {
+            list-style: none;
+        }
+
+        .user-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .month-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .month-selector input {
+            margin: 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .gps-status {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>⏱️ タイムカード</h1>
 
-<h2>業務用タイムカード</h2>
+        <div class="card">
+            <div class="tab-container">
+                <button class="tab active" onclick="switchTab('punch')">打刻</button>
+                <button class="tab" onclick="switchTab('history')">履歴</button>
+                <button class="tab" onclick="switchTab('report')">レポート</button>
+                <button class="tab" onclick="switchTab('users')">ユーザー管理</button>
+            </div>
 
-<label>月選択：</label>
-<select id="monthSelect" onchange="loadLogs()"></select>
+            <!-- 打刻タブ -->
+            <div id="tab-punch" class="tab-content active">
+                <h2>打刻</h2>
+                
+                <select id="currentUser" class="user-select">
+                    <option value="">ユーザーを選択してください</option>
+                </select>
 
-<br><br>
+                <div id="currentStatus" class="current-status">
+                    ステータス: 未選択
+                </div>
 
-<button onclick="clockIn()">出勤</button>
-<button onclick="clockOut()">退勤</button>
+                <div class="clock-buttons">
+                    <button class="btn btn-clock-in" onclick="clockIn()">
+                        ▶ 出勤
+                    </button>
+                    <button class="btn btn-clock-out" onclick="clockOut()">
+                        ■ 退勤
+                    </button>
+                </div>
 
-<table>
-<thead>
-<tr>
-<th>日付</th>
-<th>出勤</th>
-<th>退勤</th>
-<th>実働(h)</th>
-<th>残業(h)</th>
-</tr>
-</thead>
-<tbody id="logTable"></tbody>
-</table>
+                <div class="gps-status" id="gpsStatus">
+                    📍 位置情報を取得中...
+                </div>
 
-<div class="summary" id="summary"></div>
+                <div id="alertContainer"></div>
+            </div>
 
-<button onclick="downloadCSV()">CSVダウンロード</button>
+            <!-- 履歴タブ -->
+            <div id="tab-history" class="tab-content">
+                <h2>打刻履歴</h2>
+                
+                <select id="historyUser" class="user-select" onchange="loadHistory()">
+                    <option value="">すべてのユーザー</option>
+                </select>
 
-<script>
+                <div id="historyList"></div>
+            </div>
 
-function formatMonth(date){
-  return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0");
-}
+            <!-- レポートタブ -->
+            <div id="tab-report" class="tab-content">
+                <h2>月次レポート</h2>
+                
+                <select id="reportUser" class="user-select" onchange="generateReport()">
+                    <option value="">ユーザーを選択してください</option>
+                </select>
 
-function populateMonthSelect(){
-  const select = document.getElementById("monthSelect");
-  const now = new Date();
-  for(let i=0;i<12;i++){
-    const d = new Date(now.getFullYear(), now.getMonth()-i,1);
-    const val = formatMonth(d);
-    const opt = document.createElement("option");
-    opt.value = val;
-    opt.textContent = val;
-    select.appendChild(opt);
-  }
-}
+                <div class="month-selector">
+                    <label>対象月:</label>
+                    <input type="month" id="reportMonth" onchange="generateReport()">
+                </div>
 
-function getSelectedMonth(){
-  return document.getElementById("monthSelect").value;
-}
+                <div class="stats" id="reportStats"></div>
 
-function save(type){
-  const now = new Date();
-  const month = getSelectedMonth();
-  const date = now.toISOString().split("T")[0];
-  const time = now.toTimeString().slice(0,5);
+                <div id="reportDetails"></div>
+            </div>
 
-  let data = JSON.parse(localStorage.getItem(month)) || {};
-  if(!data[date]) data[date]={};
+            <!-- ユーザー管理タブ -->
+            <div id="tab-users" class="tab-content">
+                <h2>ユーザー管理</h2>
+                
+                <input type="text" id="newUserName" placeholder="新しいユーザー名を入力">
+                <button class="btn btn-primary" onclick="addUser()">ユーザーを追加</button>
 
-  if(type==="in") data[date].in=time;
-  if(type==="out") data[date].out=time;
+                <h3 style="margin: 20px 0 10px 0;">登録ユーザー</h3>
+                <ul class="user-list" id="userList"></ul>
 
-  localStorage.setItem(month, JSON.stringify(data));
-  loadLogs();
-}
+                <h3 style="margin: 30px 0 10px 0;">データバックアップ</h3>
+                <div style="display: grid; gap: 10px;">
+                    <button class="btn btn-primary" onclick="exportData()">
+                        📥 データをエクスポート（バックアップ）
+                    </button>
+                    <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">
+                        📤 データをインポート（復元）
+                    </button>
+                    <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
+                    
+                    <div style="margin-top: 10px; padding: 12px; background: #fff3cd; border-radius: 8px; font-size: 14px;">
+                        💡 定期的にエクスポートしてバックアップを保存することをお勧めします
+                    </div>
+                    
+                    <div id="lastBackup" style="font-size: 12px; color: #666; text-align: center;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-function clockIn(){ save("in"); }
-function clockOut(){ save("out"); }
+    <script>
+        // データ構造
+        let users = [];
+        let records = [];
+        let currentLocation = null;
 
-function calculate(inTime,outTime){
-  if(!inTime || !outTime) return {work:0, overtime:0};
-  const [ih,im]=inTime.split(":").map(Number);
-  const [oh,om]=outTime.split(":").map(Number);
+        // 初期化
+        async function init() {
+            await loadData();
+            updateUserSelects();
+            updateCurrentStatus();
+            updateLastBackupTime();
+            requestLocation();
+            
+            // 現在の月を設定
+            const now = new Date();
+            document.getElementById('reportMonth').value = 
+                `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            
+            // 初回起動時のメッセージ
+            if (users.length === 0 && records.length === 0) {
+                console.log('初回起動: データが空です');
+            } else {
+                console.log(`読み込み完了: ${users.length}ユーザー, ${records.length}記録`);
+            }
+        }
 
-  const inMin = ih*60+im;
-  const outMin = oh*60+om;
+        // データの読み込み
+        async function loadData() {
+            try {
+                // Claude storageから読み込み
+                const usersData = await window.storage.get('timecard_users');
+                const recordsData = await window.storage.get('timecard_records');
+                
+                users = usersData ? JSON.parse(usersData.value) : [];
+                records = recordsData ? JSON.parse(recordsData.value) : [];
+                
+                console.log('データ読み込み成功:', users.length, 'ユーザー,', records.length, '記録');
+            } catch (error) {
+                console.log('Claude storage読み込みエラー、localStorageを試行:', error);
+                // フォールバック: localStorage
+                try {
+                    const usersLS = localStorage.getItem('timecard_users');
+                    const recordsLS = localStorage.getItem('timecard_records');
+                    
+                    users = usersLS ? JSON.parse(usersLS) : [];
+                    records = recordsLS ? JSON.parse(recordsLS) : [];
+                } catch (lsError) {
+                    console.log('localStorage読み込みエラー:', lsError);
+                    users = [];
+                    records = [];
+                }
+            }
+        }
 
-  let diff = outMin-inMin-60; // 休憩60分固定
-  if(diff<0) diff=0;
+        // データの保存（多重保存で確実性を高める）
+        async function saveData() {
+            const usersJSON = JSON.stringify(users);
+            const recordsJSON = JSON.stringify(records);
+            let saveSuccess = false;
 
-  const overtime = Math.max(0,diff-480);
+            // 方法1: Claude storage（優先）
+            try {
+                await window.storage.set('timecard_users', usersJSON);
+                await window.storage.set('timecard_records', recordsJSON);
+                console.log('Claude storageに保存成功');
+                saveSuccess = true;
+            } catch (error) {
+                console.log('Claude storage保存エラー:', error);
+            }
 
-  return {
-    work:(diff/60).toFixed(2),
-    overtime:(overtime/60).toFixed(2)
-  };
-}
+            // 方法2: localStorage（バックアップ）
+            try {
+                localStorage.setItem('timecard_users', usersJSON);
+                localStorage.setItem('timecard_records', recordsJSON);
+                localStorage.setItem('timecard_backup_time', new Date().toISOString());
+                console.log('localStorageに保存成功');
+                saveSuccess = true;
+            } catch (error) {
+                console.log('localStorage保存エラー:', error);
+            }
 
-function loadLogs(){
-  const month = getSelectedMonth();
-  const data = JSON.parse(localStorage.getItem(month)) || {};
-  const table = document.getElementById("logTable");
-  table.innerHTML="";
+            // 方法3: IndexedDB（さらなるバックアップ）
+            try {
+                await saveToIndexedDB('users', users);
+                await saveToIndexedDB('records', records);
+                console.log('IndexedDBに保存成功');
+                saveSuccess = true;
+            } catch (error) {
+                console.log('IndexedDB保存エラー:', error);
+            }
 
-  let totalWork=0;
-  let totalOver=0;
+            if (!saveSuccess) {
+                showAlert('⚠️ データの保存に失敗しました', 'error');
+            }
+        }
 
-  Object.keys(data).sort().forEach(date=>{
-    const row = data[date];
-    const calc = calculate(row.in,row.out);
-    totalWork+=parseFloat(calc.work);
-    totalOver+=parseFloat(calc.overtime);
+        // IndexedDB保存機能
+        function saveToIndexedDB(storeName, data) {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('TimecardDB', 1);
+                
+                request.onerror = () => reject(request.error);
+                
+                request.onsuccess = () => {
+                    const db = request.result;
+                    try {
+                        const transaction = db.transaction([storeName], 'readwrite');
+                        const store = transaction.objectStore(storeName);
+                        store.clear();
+                        store.add({ id: 1, data: data });
+                        transaction.oncomplete = () => resolve();
+                        transaction.onerror = () => reject(transaction.error);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('users')) {
+                        db.createObjectStore('users', { keyPath: 'id' });
+                    }
+                    if (!db.objectStoreNames.contains('records')) {
+                        db.createObjectStore('records', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
 
-    table.innerHTML+=`
-    <tr>
-      <td>${date}</td>
-      <td>${row.in||""}</td>
-      <td>${row.out||""}</td>
-      <td>${calc.work}</td>
-      <td>${calc.overtime}</td>
-    </tr>
-    `;
-  });
+        // IndexedDB読み込み機能
+        function loadFromIndexedDB(storeName) {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('TimecardDB', 1);
+                
+                request.onerror = () => reject(request.error);
+                
+                request.onsuccess = () => {
+                    const db = request.result;
+                    try {
+                        const transaction = db.transaction([storeName], 'readonly');
+                        const store = transaction.objectStore(storeName);
+                        const getRequest = store.get(1);
+                        
+                        getRequest.onsuccess = () => {
+                            resolve(getRequest.result ? getRequest.result.data : null);
+                        };
+                        getRequest.onerror = () => reject(getRequest.error);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('users')) {
+                        db.createObjectStore('users', { keyPath: 'id' });
+                    }
+                    if (!db.objectStoreNames.contains('records')) {
+                        db.createObjectStore('records', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
 
-  document.getElementById("summary").innerText=
-  `月合計: ${totalWork.toFixed(2)}時間 / 残業: ${totalOver.toFixed(2)}時間`;
-}
+        // 位置情報の取得
+        function requestLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        currentLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                            accuracy: position.coords.accuracy
+                        };
+                        document.getElementById('gpsStatus').textContent = 
+                            `📍 位置情報取得済み (精度: ${Math.round(currentLocation.accuracy)}m)`;
+                    },
+                    (error) => {
+                        document.getElementById('gpsStatus').textContent = 
+                            '⚠️ 位置情報の取得に失敗しました';
+                    }
+                );
+            } else {
+                document.getElementById('gpsStatus').textContent = 
+                    '⚠️ 位置情報はサポートされていません';
+            }
+        }
 
-function downloadCSV(){
-  const month = getSelectedMonth();
-  const data = JSON.parse(localStorage.getItem(month)) || {};
+        // ユーザー選択の更新
+        function updateUserSelects() {
+            const selects = ['currentUser', 'historyUser', 'reportUser'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                const firstOption = select.options[0];
+                
+                select.innerHTML = '';
+                select.appendChild(firstOption);
+                
+                users.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.id;
+                    option.textContent = user.name;
+                    select.appendChild(option);
+                });
+                
+                select.value = currentValue;
+            });
 
-  let csv="日付,出勤,退勤,実働(h),残業(h)\n";
+            updateUserList();
+        }
 
-  Object.keys(data).sort().forEach(date=>{
-    const row = data[date];
-    const calc = calculate(row.in,row.out);
-    csv+=`${date},${row.in||""},${row.out||""},${calc.work},${calc.overtime}\n`;
-  });
+        // ユーザーリストの更新
+        function updateUserList() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
 
-  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
-  const link=document.createElement("a");
-  link.href=URL.createObjectURL(blob);
-  link.download=month+"_timecard.csv";
-  link.click();
-}
+            if (users.length === 0) {
+                userList.innerHTML = '<div class="empty-state">ユーザーが登録されていません</div>';
+                return;
+            }
 
-populateMonthSelect();
-loadLogs();
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.className = 'user-item';
+                li.innerHTML = `
+                    <span>${user.name}</span>
+                    <button class="btn-delete" onclick="deleteUser('${user.id}')">削除</button>
+                `;
+                userList.appendChild(li);
+            });
+        }
 
-</script>
+        // ユーザー追加
+        async function addUser() {
+            const input = document.getElementById('newUserName');
+            const name = input.value.trim();
 
+            if (!name) {
+                showAlert('ユーザー名を入力してください', 'error');
+                return;
+            }
+
+            const user = {
+                id: 'user_' + Date.now(),
+                name: name,
+                createdAt: new Date().toISOString()
+            };
+
+            users.push(user);
+            await saveData();
+            
+            input.value = '';
+            updateUserSelects();
+            showAlert(`${name} を追加しました`, 'success');
+        }
+
+        // ユーザー削除
+        async function deleteUser(userId) {
+            if (!confirm('このユーザーを削除してもよろしいですか？\n関連する打刻記録も削除されます。')) {
+                return;
+            }
+
+            users = users.filter(u => u.id !== userId);
+            records = records.filter(r => r.userId !== userId);
+            
+            await saveData();
+            updateUserSelects();
+            showAlert('ユーザーを削除しました', 'success');
+        }
+
+        // 出勤
+        async function clockIn() {
+            const userId = document.getElementById('currentUser').value;
+            
+            if (!userId) {
+                showAlert('ユーザーを選択してください', 'error');
+                return;
+            }
+
+            const user = users.find(u => u.id === userId);
+            
+            // すでに出勤中かチェック
+            const lastRecord = records
+                .filter(r => r.userId === userId)
+                .sort((a, b) => new Date(b.clockIn) - new Date(a.clockIn))[0];
+
+            if (lastRecord && !lastRecord.clockOut) {
+                showAlert('すでに出勤中です', 'error');
+                return;
+            }
+
+            const record = {
+                id: 'record_' + Date.now(),
+                userId: userId,
+                userName: user.name,
+                clockIn: new Date().toISOString(),
+                clockOut: null,
+                location: currentLocation
+            };
+
+            records.push(record);
+            await saveData();
+
+            updateCurrentStatus();
+            showAlert('出勤を記録しました', 'success');
+            requestLocation(); // 次回のために更新
+        }
+
+        // 退勤
+        async function clockOut() {
+            const userId = document.getElementById('currentUser').value;
+            
+            if (!userId) {
+                showAlert('ユーザーを選択してください', 'error');
+                return;
+            }
+
+            // 最新の出勤記録を取得
+            const lastRecord = records
+                .filter(r => r.userId === userId && !r.clockOut)
+                .sort((a, b) => new Date(b.clockIn) - new Date(a.clockIn))[0];
+
+            if (!lastRecord) {
+                showAlert('出勤記録がありません', 'error');
+                return;
+            }
+
+            lastRecord.clockOut = new Date().toISOString();
+            lastRecord.clockOutLocation = currentLocation;
+            
+            await saveData();
+
+            updateCurrentStatus();
+            
+            const duration = calculateDuration(lastRecord.clockIn, lastRecord.clockOut);
+            showAlert(`退勤を記録しました (勤務時間: ${duration})`, 'success');
+            requestLocation();
+        }
+
+        // 現在のステータス更新
+        function updateCurrentStatus() {
+            const userId = document.getElementById('currentUser').value;
+            const statusDiv = document.getElementById('currentStatus');
+
+            if (!userId) {
+                statusDiv.className = 'current-status';
+                statusDiv.textContent = 'ステータス: 未選択';
+                return;
+            }
+
+            const user = users.find(u => u.id === userId);
+            const lastRecord = records
+                .filter(r => r.userId === userId)
+                .sort((a, b) => new Date(b.clockIn) - new Date(a.clockIn))[0];
+
+            if (!lastRecord || lastRecord.clockOut) {
+                statusDiv.className = 'current-status status-off';
+                statusDiv.textContent = `${user.name}: 退勤中`;
+            } else {
+                statusDiv.className = 'current-status status-working';
+                const duration = calculateDuration(lastRecord.clockIn, new Date().toISOString());
+                statusDiv.textContent = `${user.name}: 勤務中 (${duration})`;
+            }
+        }
+
+        // ユーザー選択変更時
+        document.getElementById('currentUser').addEventListener('change', updateCurrentStatus);
+
+        // 履歴の読み込み
+        function loadHistory() {
+            const userId = document.getElementById('historyUser').value;
+            const historyList = document.getElementById('historyList');
+
+            let filteredRecords = [...records];
+            if (userId) {
+                filteredRecords = filteredRecords.filter(r => r.userId === userId);
+            }
+
+            filteredRecords.sort((a, b) => new Date(b.clockIn) - new Date(a.clockIn));
+
+            if (filteredRecords.length === 0) {
+                historyList.innerHTML = '<div class="empty-state">打刻履歴がありません</div>';
+                return;
+            }
+
+            historyList.innerHTML = filteredRecords.map(record => `
+                <div class="record-item">
+                    <div class="record-header">
+                        <span>${record.userName}</span>
+                        <span>${new Date(record.clockIn).toLocaleDateString('ja-JP')}</span>
+                    </div>
+                    <div class="record-details">
+                        出勤: ${formatTime(record.clockIn)}
+                        ${record.clockOut ? `→ 退勤: ${formatTime(record.clockOut)}` : '(勤務中)'}
+                    </div>
+                    ${record.clockOut ? `
+                        <div class="record-details">
+                            勤務時間: ${calculateDuration(record.clockIn, record.clockOut)}
+                        </div>
+                    ` : ''}
+                    ${record.location ? `
+                        <div class="location-info">
+                            📍 出勤位置: ${record.location.lat.toFixed(6)}, ${record.location.lng.toFixed(6)}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // レポート生成
+        function generateReport() {
+            const userId = document.getElementById('reportUser').value;
+            const monthValue = document.getElementById('reportMonth').value;
+
+            if (!userId || !monthValue) {
+                document.getElementById('reportStats').innerHTML = '';
+                document.getElementById('reportDetails').innerHTML = 
+                    '<div class="empty-state">ユーザーと月を選択してください</div>';
+                return;
+            }
+
+            const [year, month] = monthValue.split('-').map(Number);
+            const user = users.find(u => u.id === userId);
+
+            // 対象月の記録を抽出
+            const monthRecords = records.filter(r => {
+                if (r.userId !== userId || !r.clockOut) return false;
+                const date = new Date(r.clockIn);
+                return date.getFullYear() === year && date.getMonth() + 1 === month;
+            });
+
+            // 統計計算
+            let totalMinutes = 0;
+            let totalDays = new Set();
+
+            monthRecords.forEach(record => {
+                const start = new Date(record.clockIn);
+                const end = new Date(record.clockOut);
+                const minutes = (end - start) / 1000 / 60;
+                totalMinutes += minutes;
+                totalDays.add(start.toDateString());
+            });
+
+            const totalHours = Math.floor(totalMinutes / 60);
+            const avgHoursPerDay = totalDays.size > 0 ? (totalMinutes / 60 / totalDays.size).toFixed(1) : 0;
+
+            // 統計表示
+            document.getElementById('reportStats').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${totalDays.size}</div>
+                    <div class="stat-label">出勤日数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalHours}h</div>
+                    <div class="stat-label">総勤務時間</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${avgHoursPerDay}h</div>
+                    <div class="stat-label">平均勤務時間/日</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${monthRecords.length}</div>
+                    <div class="stat-label">打刻回数</div>
+                </div>
+            `;
+
+            // 詳細表示
+            if (monthRecords.length === 0) {
+                document.getElementById('reportDetails').innerHTML = 
+                    '<div class="empty-state">この月の記録がありません</div>';
+                return;
+            }
+
+            document.getElementById('reportDetails').innerHTML = `
+                <h3 style="margin: 20px 0 10px 0;">詳細</h3>
+                ${monthRecords.map(record => `
+                    <div class="record-item">
+                        <div class="record-header">
+                            <span>${new Date(record.clockIn).toLocaleDateString('ja-JP')}</span>
+                            <span>${calculateDuration(record.clockIn, record.clockOut)}</span>
+                        </div>
+                        <div class="record-details">
+                            ${formatTime(record.clockIn)} - ${formatTime(record.clockOut)}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // タブ切り替え
+        function switchTab(tabName) {
+            // すべてのタブとコンテンツの active を解除
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // 選択されたタブとコンテンツを active に
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+
+            // タブに応じてデータを更新
+            if (tabName === 'history') {
+                loadHistory();
+            } else if (tabName === 'report') {
+                generateReport();
+            }
+        }
+
+        // アラート表示
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            container.innerHTML = '';
+            container.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // 時刻フォーマット
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // 勤務時間計算
+        function calculateDuration(start, end) {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const diffMs = endDate - startDate;
+            const hours = Math.floor(diffMs / 1000 / 60 / 60);
+            const minutes = Math.floor((diffMs / 1000 / 60) % 60);
+            return `${hours}時間${minutes}分`;
+        }
+
+        // ページ読み込み時に初期化
+        window.addEventListener('load', init);
+
+        // データエクスポート
+        function exportData() {
+            const exportData = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                users: users,
+                records: records
+            };
+
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `timecard_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showAlert('データをエクスポートしました', 'success');
+            updateLastBackupTime();
+        }
+
+        // データインポート
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!importedData.users || !importedData.records) {
+                        showAlert('無効なバックアップファイルです', 'error');
+                        return;
+                    }
+
+                    if (confirm('現在のデータは上書きされます。インポートを続行しますか？')) {
+                        users = importedData.users;
+                        records = importedData.records;
+                        
+                        await saveData();
+                        
+                        updateUserSelects();
+                        updateCurrentStatus();
+                        
+                        showAlert('データをインポートしました', 'success');
+                    }
+                } catch (error) {
+                    console.error('インポートエラー:', error);
+                    showAlert('データのインポートに失敗しました', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            // ファイル入力をリセット
+            event.target.value = '';
+        }
+
+        // 最終バックアップ時刻を表示
+        function updateLastBackupTime() {
+            const backupTime = localStorage.getItem('timecard_backup_time');
+            const lastBackupDiv = document.getElementById('lastBackup');
+            
+            if (backupTime) {
+                const date = new Date(backupTime);
+                lastBackupDiv.textContent = `最終保存: ${date.toLocaleString('ja-JP')}`;
+            } else {
+                lastBackupDiv.textContent = '';
+            }
+        }
+
+        // 定期的な自動保存（5分ごと）
+        setInterval(async () => {
+            if (users.length > 0 || records.length > 0) {
+                await saveData();
+                console.log('自動保存完了:', new Date().toLocaleTimeString());
+            }
+        }, 5 * 60 * 1000); // 5分
+
+        // ページを閉じる前に保存
+        window.addEventListener('beforeunload', async (e) => {
+            await saveData();
+        });
+
+        // ページが非表示になる時も保存
+        document.addEventListener('visibilitychange', async () => {
+            if (document.hidden) {
+                await saveData();
+            }
+        });
+    </script>
 </body>
 </html>
