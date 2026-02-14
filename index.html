@@ -6,8 +6,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#667eea">
-    <title>タイムカード</title>
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuOCv+OCpOODoOOCq+ODvOODiSIsCiAgInNob3J0X25hbWUiOiAi44K/44Kk44Og44Kr44O844OJIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmZmZmZmYiLAogICJ0aGVtZV9jb2xvciI6ICIjNjY3ZWVhIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIGZpbGw9JyU2NjdlZWEnLyUzRSUzQ3RleHQgeD0nNTAlMjUnIHk9JzUwJTI1JyBmb250LXNpemU9JzEyMCcgZmlsbD0nJWZmZicgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J2NlbnRyYWwnJTNF8J+TseKPsSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyUzRSUzQ3JlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIGZpbGw9JyU2NjdlZWEnLyUzRSUzQ3RleHQgeD0nNTAlMjUnIHk9JzUwJTI1JyBmb250LXNpemU9JzM2MCcgZmlsbD0nJWZmZicgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J2NlbnRyYWwnJTNF8J+TseKPsSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0KICBdCn0=">
+    <title>タイムカード（共有版）</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuOCv+OCpOODoOOCq+ODvOODiSIsCiAgInNob3J0X25hbWUiOiAi44K/44Kk44Og44Kr44O844OJIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmZmZmZmYiLAogICJ0aGVtZV9jb2xvciI6ICIjNjY3ZWVhIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIGZpbGw9JyU2NjdlZWEnLyUzRSUzQ3RleHQgeD0nNTAlMjUnIHk9JzUwJTI1JyBmb250LXNpemU9JzEyMCcgZmlsbD0nJWZmZicgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J2NlbnRyYWwnJTNF8J+TseKPsSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0KICBdCn0=">
     <style>
         * {
             margin: 0;
@@ -51,6 +51,26 @@
             font-size: 20px;
             border-bottom: 2px solid #667eea;
             padding-bottom: 10px;
+        }
+
+        .sync-status {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .sync-status.syncing {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .sync-status.error {
+            background: #f8d7da;
+            color: #721c24;
         }
 
         .tab-container {
@@ -131,6 +151,14 @@
             color: white;
             padding: 12px 24px;
             font-size: 16px;
+        }
+
+        .btn-refresh {
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            margin-bottom: 15px;
         }
 
         .current-status {
@@ -283,26 +311,52 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
+        .device-info {
+            font-size: 12px;
+            color: #666;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .online-users {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⏱️ タイムカード</h1>
+        <h1>⏱️ タイムカード（全社共有）</h1>
+
+        <div class="sync-status" id="syncStatus">
+            🔄 同期中...
+        </div>
 
         <div class="card">
             <div class="tab-container">
                 <button class="tab active" onclick="switchTab('punch')">打刻</button>
                 <button class="tab" onclick="switchTab('history')">履歴</button>
                 <button class="tab" onclick="switchTab('report')">レポート</button>
-                <button class="tab" onclick="switchTab('users')">ユーザー管理</button>
+                <button class="tab" onclick="switchTab('users')">社員管理</button>
+                <button class="tab" onclick="switchTab('admin')">管理</button>
             </div>
 
             <!-- 打刻タブ -->
             <div id="tab-punch" class="tab-content active">
                 <h2>打刻</h2>
                 
+                <button class="btn btn-refresh" onclick="syncData()">
+                    🔄 最新データに更新
+                </button>
+
                 <select id="currentUser" class="user-select">
-                    <option value="">ユーザーを選択してください</option>
+                    <option value="">社員を選択してください</option>
                 </select>
 
                 <div id="currentStatus" class="current-status">
@@ -322,6 +376,10 @@
                     📍 位置情報を取得中...
                 </div>
 
+                <div class="device-info" id="deviceInfo">
+                    📱 端末ID: 読み込み中...
+                </div>
+
                 <div id="alertContainer"></div>
             </div>
 
@@ -329,8 +387,12 @@
             <div id="tab-history" class="tab-content">
                 <h2>打刻履歴</h2>
                 
+                <button class="btn btn-refresh" onclick="syncData(); loadHistory();">
+                    🔄 最新データに更新
+                </button>
+                
                 <select id="historyUser" class="user-select" onchange="loadHistory()">
-                    <option value="">すべてのユーザー</option>
+                    <option value="">すべての社員</option>
                 </select>
 
                 <div id="historyList"></div>
@@ -340,8 +402,12 @@
             <div id="tab-report" class="tab-content">
                 <h2>月次レポート</h2>
                 
+                <button class="btn btn-refresh" onclick="syncData(); generateReport();">
+                    🔄 最新データに更新
+                </button>
+                
                 <select id="reportUser" class="user-select" onchange="generateReport()">
-                    <option value="">ユーザーを選択してください</option>
+                    <option value="">社員を選択してください</option>
                 </select>
 
                 <div class="month-selector">
@@ -354,48 +420,87 @@
                 <div id="reportDetails"></div>
             </div>
 
-            <!-- ユーザー管理タブ -->
+            <!-- 社員管理タブ -->
             <div id="tab-users" class="tab-content">
-                <h2>ユーザー管理</h2>
+                <h2>社員管理</h2>
                 
-                <input type="text" id="newUserName" placeholder="新しいユーザー名を入力">
-                <button class="btn btn-primary" onclick="addUser()">ユーザーを追加</button>
+                <input type="text" id="newUserName" placeholder="新しい社員名を入力">
+                <button class="btn btn-primary" onclick="addUser()">社員を追加</button>
 
-                <h3 style="margin: 20px 0 10px 0;">登録ユーザー</h3>
+                <h3 style="margin: 20px 0 10px 0;">登録社員</h3>
                 <ul class="user-list" id="userList"></ul>
+            </div>
 
-                <h3 style="margin: 30px 0 10px 0;">データバックアップ</h3>
+            <!-- 管理タブ -->
+            <div id="tab-admin" class="tab-content">
+                <h2>システム管理</h2>
+                
+                <div class="online-users" id="onlineUsers">
+                    📊 アクティブ端末: 確認中...
+                </div>
+
+                <h3 style="margin: 20px 0 10px 0;">データバックアップ</h3>
                 <div style="display: grid; gap: 10px;">
                     <button class="btn btn-primary" onclick="exportData()">
-                        📥 データをエクスポート（バックアップ）
+                        📥 全データをエクスポート
                     </button>
                     <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">
-                        📤 データをインポート（復元）
+                        📤 データをインポート
                     </button>
                     <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
                     
+                    <button class="btn btn-primary" onclick="forceSync()" style="background: #28a745;">
+                        🔄 全端末を強制同期
+                    </button>
+                    
                     <div style="margin-top: 10px; padding: 12px; background: #fff3cd; border-radius: 8px; font-size: 14px;">
-                        💡 定期的にエクスポートしてバックアップを保存することをお勧めします
+                        💡 このアプリは全ての端末でデータを共有します。どの端末で打刻しても、全ての端末に自動的に反映されます。
                     </div>
                     
-                    <div id="lastBackup" style="font-size: 12px; color: #666; text-align: center;"></div>
+                    <div id="lastSync" style="font-size: 12px; color: #666; text-align: center; margin-top: 10px;"></div>
                 </div>
+
+                <h3 style="margin: 20px 0 10px 0;">危険な操作</h3>
+                <button class="btn" style="background: #dc3545; color: white;" onclick="clearAllData()">
+                    🗑️ 全データを削除（全端末）
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // データ構造
+        // グローバル変数
         let users = [];
         let records = [];
         let currentLocation = null;
+        let deviceId = '';
+        let syncInterval = null;
+
+        // 端末IDの生成または取得
+        function getDeviceId() {
+            let id = localStorage.getItem('device_id');
+            if (!id) {
+                id = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('device_id', id);
+            }
+            deviceId = id;
+            updateDeviceInfo();
+        }
+
+        // 端末情報の表示
+        function updateDeviceInfo() {
+            const deviceInfo = document.getElementById('deviceInfo');
+            const deviceType = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'スマホ' : 'PC';
+            deviceInfo.textContent = `📱 端末: ${deviceType} (ID: ${deviceId.substr(-8)})`;
+        }
 
         // 初期化
         async function init() {
-            await loadData();
+            getDeviceId();
+            await syncData();
             updateUserSelects();
             updateCurrentStatus();
-            updateLastBackupTime();
+            updateLastSyncTime();
             requestLocation();
             
             // 現在の月を設定
@@ -403,150 +508,111 @@
             document.getElementById('reportMonth').value = 
                 `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             
-            // 初回起動時のメッセージ
-            if (users.length === 0 && records.length === 0) {
-                console.log('初回起動: データが空です');
-            } else {
-                console.log(`読み込み完了: ${users.length}ユーザー, ${records.length}記録`);
-            }
+            // 定期同期（30秒ごと）
+            syncInterval = setInterval(async () => {
+                await syncData(true); // サイレント同期
+            }, 30000);
+
+            console.log(`初期化完了: ${users.length}社員, ${records.length}記録`);
         }
 
-        // データの読み込み
-        async function loadData() {
+        // データの同期（共有ストレージから読み込み）
+        async function syncData(silent = false) {
+            if (!silent) {
+                setSyncStatus('syncing', '🔄 同期中...');
+            }
+
             try {
-                // Claude storageから読み込み
-                const usersData = await window.storage.get('timecard_users');
-                const recordsData = await window.storage.get('timecard_records');
+                // 共有ストレージから読み込み（shared: true）
+                const usersData = await window.storage.get('timecard_shared_users', true);
+                const recordsData = await window.storage.get('timecard_shared_records', true);
                 
                 users = usersData ? JSON.parse(usersData.value) : [];
                 records = recordsData ? JSON.parse(recordsData.value) : [];
                 
-                console.log('データ読み込み成功:', users.length, 'ユーザー,', records.length, '記録');
-            } catch (error) {
-                console.log('Claude storage読み込みエラー、localStorageを試行:', error);
-                // フォールバック: localStorage
-                try {
-                    const usersLS = localStorage.getItem('timecard_users');
-                    const recordsLS = localStorage.getItem('timecard_records');
-                    
-                    users = usersLS ? JSON.parse(usersLS) : [];
-                    records = recordsLS ? JSON.parse(recordsLS) : [];
-                } catch (lsError) {
-                    console.log('localStorage読み込みエラー:', lsError);
-                    users = [];
-                    records = [];
+                if (!silent) {
+                    updateUserSelects();
+                    updateCurrentStatus();
+                    updateLastSyncTime();
+                    setSyncStatus('success', '✅ 同期完了');
                 }
+                
+                console.log('同期成功:', users.length, '社員,', records.length, '記録');
+                return true;
+            } catch (error) {
+                console.error('同期エラー:', error);
+                if (!silent) {
+                    setSyncStatus('error', '⚠️ 同期エラー');
+                }
+                return false;
             }
         }
 
-        // データの保存（多重保存で確実性を高める）
+        // データの保存（共有ストレージに保存）
         async function saveData() {
-            const usersJSON = JSON.stringify(users);
-            const recordsJSON = JSON.stringify(records);
-            let saveSuccess = false;
+            setSyncStatus('syncing', '🔄 保存中...');
 
-            // 方法1: Claude storage（優先）
             try {
-                await window.storage.set('timecard_users', usersJSON);
-                await window.storage.set('timecard_records', recordsJSON);
-                console.log('Claude storageに保存成功');
-                saveSuccess = true;
+                // 共有ストレージに保存（shared: true）
+                await window.storage.set('timecard_shared_users', JSON.stringify(users), true);
+                await window.storage.set('timecard_shared_records', JSON.stringify(records), true);
+                
+                // 最終更新情報も保存
+                const updateInfo = {
+                    timestamp: new Date().toISOString(),
+                    deviceId: deviceId
+                };
+                await window.storage.set('timecard_last_update', JSON.stringify(updateInfo), true);
+                
+                updateLastSyncTime();
+                setSyncStatus('success', '✅ 保存完了（全端末に反映）');
+                
+                console.log('保存成功');
+                return true;
             } catch (error) {
-                console.log('Claude storage保存エラー:', error);
-            }
-
-            // 方法2: localStorage（バックアップ）
-            try {
-                localStorage.setItem('timecard_users', usersJSON);
-                localStorage.setItem('timecard_records', recordsJSON);
-                localStorage.setItem('timecard_backup_time', new Date().toISOString());
-                console.log('localStorageに保存成功');
-                saveSuccess = true;
-            } catch (error) {
-                console.log('localStorage保存エラー:', error);
-            }
-
-            // 方法3: IndexedDB（さらなるバックアップ）
-            try {
-                await saveToIndexedDB('users', users);
-                await saveToIndexedDB('records', records);
-                console.log('IndexedDBに保存成功');
-                saveSuccess = true;
-            } catch (error) {
-                console.log('IndexedDB保存エラー:', error);
-            }
-
-            if (!saveSuccess) {
-                showAlert('⚠️ データの保存に失敗しました', 'error');
+                console.error('保存エラー:', error);
+                setSyncStatus('error', '⚠️ 保存エラー');
+                showAlert('データの保存に失敗しました', 'error');
+                return false;
             }
         }
 
-        // IndexedDB保存機能
-        function saveToIndexedDB(storeName, data) {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open('TimecardDB', 1);
-                
-                request.onerror = () => reject(request.error);
-                
-                request.onsuccess = () => {
-                    const db = request.result;
-                    try {
-                        const transaction = db.transaction([storeName], 'readwrite');
-                        const store = transaction.objectStore(storeName);
-                        store.clear();
-                        store.add({ id: 1, data: data });
-                        transaction.oncomplete = () => resolve();
-                        transaction.onerror = () => reject(transaction.error);
-                    } catch (error) {
-                        reject(error);
-                    }
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains('users')) {
-                        db.createObjectStore('users', { keyPath: 'id' });
-                    }
-                    if (!db.objectStoreNames.contains('records')) {
-                        db.createObjectStore('records', { keyPath: 'id' });
-                    }
-                };
-            });
+        // 同期ステータスの表示
+        function setSyncStatus(type, message) {
+            const statusDiv = document.getElementById('syncStatus');
+            statusDiv.className = 'sync-status';
+            if (type === 'syncing') {
+                statusDiv.classList.add('syncing');
+            } else if (type === 'error') {
+                statusDiv.classList.add('error');
+            }
+            statusDiv.textContent = message;
+
+            if (type !== 'syncing') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 3000);
+                setTimeout(() => {
+                    statusDiv.style.display = 'block';
+                    setSyncStatus('success', '✅ 同期済み');
+                }, 3500);
+            }
         }
 
-        // IndexedDB読み込み機能
-        function loadFromIndexedDB(storeName) {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open('TimecardDB', 1);
+        // 最終同期時刻の更新
+        async function updateLastSyncTime() {
+            try {
+                const updateInfo = await window.storage.get('timecard_last_update', true);
+                const lastSyncDiv = document.getElementById('lastSync');
                 
-                request.onerror = () => reject(request.error);
-                
-                request.onsuccess = () => {
-                    const db = request.result;
-                    try {
-                        const transaction = db.transaction([storeName], 'readonly');
-                        const store = transaction.objectStore(storeName);
-                        const getRequest = store.get(1);
-                        
-                        getRequest.onsuccess = () => {
-                            resolve(getRequest.result ? getRequest.result.data : null);
-                        };
-                        getRequest.onerror = () => reject(getRequest.error);
-                    } catch (error) {
-                        reject(error);
-                    }
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains('users')) {
-                        db.createObjectStore('users', { keyPath: 'id' });
-                    }
-                    if (!db.objectStoreNames.contains('records')) {
-                        db.createObjectStore('records', { keyPath: 'id' });
-                    }
-                };
-            });
+                if (updateInfo) {
+                    const info = JSON.parse(updateInfo.value);
+                    const date = new Date(info.timestamp);
+                    lastSyncDiv.textContent = `最終更新: ${date.toLocaleString('ja-JP')} (端末: ${info.deviceId.substr(-8)})`;
+                }
+            } catch (error) {
+                console.log('最終同期時刻取得エラー:', error);
+            }
         }
 
         // 位置情報の取得
@@ -603,7 +669,7 @@
             userList.innerHTML = '';
 
             if (users.length === 0) {
-                userList.innerHTML = '<div class="empty-state">ユーザーが登録されていません</div>';
+                userList.innerHTML = '<div class="empty-state">社員が登録されていません</div>';
                 return;
             }
 
@@ -624,14 +690,15 @@
             const name = input.value.trim();
 
             if (!name) {
-                showAlert('ユーザー名を入力してください', 'error');
+                showAlert('社員名を入力してください', 'error');
                 return;
             }
 
             const user = {
                 id: 'user_' + Date.now(),
                 name: name,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                createdBy: deviceId
             };
 
             users.push(user);
@@ -639,12 +706,12 @@
             
             input.value = '';
             updateUserSelects();
-            showAlert(`${name} を追加しました`, 'success');
+            showAlert(`${name} を追加しました（全端末に反映済み）`, 'success');
         }
 
         // ユーザー削除
         async function deleteUser(userId) {
-            if (!confirm('このユーザーを削除してもよろしいですか？\n関連する打刻記録も削除されます。')) {
+            if (!confirm('この社員を削除してもよろしいですか？\n関連する打刻記録も削除されます。\n※全ての端末から削除されます')) {
                 return;
             }
 
@@ -653,7 +720,7 @@
             
             await saveData();
             updateUserSelects();
-            showAlert('ユーザーを削除しました', 'success');
+            showAlert('社員を削除しました（全端末に反映済み）', 'success');
         }
 
         // 出勤
@@ -661,7 +728,7 @@
             const userId = document.getElementById('currentUser').value;
             
             if (!userId) {
-                showAlert('ユーザーを選択してください', 'error');
+                showAlert('社員を選択してください', 'error');
                 return;
             }
 
@@ -683,15 +750,16 @@
                 userName: user.name,
                 clockIn: new Date().toISOString(),
                 clockOut: null,
-                location: currentLocation
+                location: currentLocation,
+                deviceId: deviceId
             };
 
             records.push(record);
             await saveData();
 
             updateCurrentStatus();
-            showAlert('出勤を記録しました', 'success');
-            requestLocation(); // 次回のために更新
+            showAlert('出勤を記録しました（全端末に反映済み）', 'success');
+            requestLocation();
         }
 
         // 退勤
@@ -699,7 +767,7 @@
             const userId = document.getElementById('currentUser').value;
             
             if (!userId) {
-                showAlert('ユーザーを選択してください', 'error');
+                showAlert('社員を選択してください', 'error');
                 return;
             }
 
@@ -715,13 +783,14 @@
 
             lastRecord.clockOut = new Date().toISOString();
             lastRecord.clockOutLocation = currentLocation;
+            lastRecord.clockOutDeviceId = deviceId;
             
             await saveData();
 
             updateCurrentStatus();
             
             const duration = calculateDuration(lastRecord.clockIn, lastRecord.clockOut);
-            showAlert(`退勤を記録しました (勤務時間: ${duration})`, 'success');
+            showAlert(`退勤を記録しました (勤務時間: ${duration})（全端末に反映済み）`, 'success');
             requestLocation();
         }
 
@@ -789,6 +858,7 @@
                     ${record.location ? `
                         <div class="location-info">
                             📍 出勤位置: ${record.location.lat.toFixed(6)}, ${record.location.lng.toFixed(6)}
+                            ${record.deviceId ? ` | 端末: ${record.deviceId.substr(-8)}` : ''}
                         </div>
                     ` : ''}
                 </div>
@@ -803,7 +873,7 @@
             if (!userId || !monthValue) {
                 document.getElementById('reportStats').innerHTML = '';
                 document.getElementById('reportDetails').innerHTML = 
-                    '<div class="empty-state">ユーザーと月を選択してください</div>';
+                    '<div class="empty-state">社員と月を選択してください</div>';
                 return;
             }
 
@@ -877,15 +947,12 @@
 
         // タブ切り替え
         function switchTab(tabName) {
-            // すべてのタブとコンテンツの active を解除
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            // 選択されたタブとコンテンツを active に
             event.target.classList.add('active');
             document.getElementById('tab-' + tabName).classList.add('active');
 
-            // タブに応じてデータを更新
             if (tabName === 'history') {
                 loadHistory();
             } else if (tabName === 'report') {
@@ -924,14 +991,12 @@
             return `${hours}時間${minutes}分`;
         }
 
-        // ページ読み込み時に初期化
-        window.addEventListener('load', init);
-
         // データエクスポート
         function exportData() {
             const exportData = {
-                version: '1.0',
+                version: '2.0',
                 exportDate: new Date().toISOString(),
+                deviceId: deviceId,
                 users: users,
                 records: records
             };
@@ -942,14 +1007,13 @@
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `timecard_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.download = `timecard_shared_backup_${new Date().toISOString().split('T')[0]}.json`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
 
             showAlert('データをエクスポートしました', 'success');
-            updateLastBackupTime();
         }
 
         // データインポート
@@ -967,7 +1031,7 @@
                         return;
                     }
 
-                    if (confirm('現在のデータは上書きされます。インポートを続行しますか？')) {
+                    if (confirm('現在のデータは上書きされます。\n※全ての端末のデータが更新されます。\n\nインポートを続行しますか？')) {
                         users = importedData.users;
                         records = importedData.records;
                         
@@ -976,7 +1040,7 @@
                         updateUserSelects();
                         updateCurrentStatus();
                         
-                        showAlert('データをインポートしました', 'success');
+                        showAlert('データをインポートしました（全端末に反映済み）', 'success');
                     }
                 } catch (error) {
                     console.error('インポートエラー:', error);
@@ -985,33 +1049,44 @@
             };
             reader.readAsText(file);
             
-            // ファイル入力をリセット
             event.target.value = '';
         }
 
-        // 最終バックアップ時刻を表示
-        function updateLastBackupTime() {
-            const backupTime = localStorage.getItem('timecard_backup_time');
-            const lastBackupDiv = document.getElementById('lastBackup');
-            
-            if (backupTime) {
-                const date = new Date(backupTime);
-                lastBackupDiv.textContent = `最終保存: ${date.toLocaleString('ja-JP')}`;
-            } else {
-                lastBackupDiv.textContent = '';
+        // 強制同期
+        async function forceSync() {
+            if (confirm('全ての端末でデータを最新状態に同期します。よろしいですか？')) {
+                await saveData();
+                await syncData();
+                showAlert('強制同期を実行しました', 'success');
             }
         }
 
-        // 定期的な自動保存（5分ごと）
-        setInterval(async () => {
-            if (users.length > 0 || records.length > 0) {
-                await saveData();
-                console.log('自動保存完了:', new Date().toLocaleTimeString());
+        // 全データ削除
+        async function clearAllData() {
+            if (!confirm('⚠️ 警告 ⚠️\n\n全ての社員データと打刻記録を削除します。\nこの操作は全ての端末に反映され、元に戻すことはできません。\n\n本当に削除しますか？')) {
+                return;
             }
-        }, 5 * 60 * 1000); // 5分
+
+            if (!confirm('最終確認：本当に全データを削除しますか？')) {
+                return;
+            }
+
+            users = [];
+            records = [];
+            
+            await saveData();
+            
+            updateUserSelects();
+            updateCurrentStatus();
+            
+            showAlert('全データを削除しました（全端末に反映済み）', 'success');
+        }
+
+        // ページ読み込み時に初期化
+        window.addEventListener('load', init);
 
         // ページを閉じる前に保存
-        window.addEventListener('beforeunload', async (e) => {
+        window.addEventListener('beforeunload', async () => {
             await saveData();
         });
 
@@ -1019,6 +1094,14 @@
         document.addEventListener('visibilitychange', async () => {
             if (document.hidden) {
                 await saveData();
+            }
+        });
+
+        // ページが再度表示された時に同期
+        document.addEventListener('visibilitychange', async () => {
+            if (!document.hidden) {
+                await syncData(true);
+                updateCurrentStatus();
             }
         });
     </script>
