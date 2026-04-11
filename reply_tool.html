@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#4f46e5">
+  <title>ビジネス返信ツール</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Meiryo', sans-serif;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    .container { max-width: 680px; margin: 0 auto; }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 4px;
+      margin-top: 14px;
+    }
+    label:first-of-type { margin-top: 0; }
+
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      background: #fafafa;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #4f46e5;
+      background: white;
+    }
+
+    textarea { resize: vertical; line-height: 1.6; }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .scenario-btn {
+      padding: 10px 8px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      background: white;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .scenario-btn:hover { border-color: #4f46e5; color: #4f46e5; background: #eef2ff; }
+    .scenario-btn.active { border-color: #4f46e5; background: #4f46e5; color: white; }
+
+    .fields-box {
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .generate-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .generate-btn:hover { opacity: 0.9; }
+    .generate-btn:active { transform: scale(0.98); }
+
+    .output-area {
+      position: relative;
+    }
+
+    #output {
+      width: 100%;
+      min-height: 260px;
+      padding: 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.9;
+      background: #fafafa;
+      white-space: pre-wrap;
+      resize: vertical;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 6px 14px;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .copy-btn:hover { background: #3730a3; }
+    .copy-btn.copied { background: #059669; }
+
+    .hint {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 5px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: #ddd6fe;
+      color: #5b21b6;
+      font-weight: 600;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 480px) {
+      .scenario-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+      .scenario-btn { font-size: 12px; padding: 9px 4px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📧 ビジネス返信ツール</h1>
+
+  <!-- シナリオ選択 -->
+  <div class="card">
+    <div class="section-title">① シナリオを選ぶ</div>
+    <div class="scenario-grid">
+      <button class="scenario-btn active" data-scene="shipping_done">📦 発送完了の連絡</button>
+      <button class="scenario-btn" data-scene="not_received">❓ 配達完了・未着</button>
+      <button class="scenario-btn" data-scene="delay">🙏 発送遅延・お詫び</button>
+      <button class="scenario-btn" data-scene="cancel_ng">🚫 キャンセル不可</button>
+      <button class="scenario-btn" data-scene="coupon_sent">🎟️ クーポン送付済み</button>
+      <button class="scenario-btn" data-scene="coupon_resend">🔄 クーポン再送</button>
+      <button class="scenario-btn" data-scene="no_reply_needed">✅ 返信不要と言われた</button>
+      <button class="scenario-btn" data-scene="inquiry_ack">📋 問い合わせへの回答</button>
+    </div>
+  </div>
+
+  <!-- 入力フォーム -->
+  <div class="card">
+    <div class="section-title">② 情報を入力</div>
+    <div class="fields-box">
+      <label>お客様名 <span class="badge">必須</span></label>
+      <input type="text" id="customerName" placeholder="例：山田花子">
+
+      <!-- 発送完了 -->
+      <div id="fields-shipping_done">
+        <label>発送日</label>
+        <input type="text" id="shipDate" placeholder="例：4月11日、本日">
+        <label>配送業者</label>
+        <input type="text" id="carrier" placeholder="例：ヤマト運輸、郵便局">
+        <label>追跡番号（任意）</label>
+        <input type="text" id="trackingNum" placeholder="例：439077325061">
+        <label>商品備考（任意）</label>
+        <input type="text" id="shipNote" placeholder="例：7月予約商品">
+      </div>
+
+      <!-- 未着 -->
+      <div id="fields-not_received" style="display:none">
+        <label>配達完了日時</label>
+        <input type="text" id="deliveredAt" placeholder="例：4月8日 13:43">
+        <label>追跡番号</label>
+        <input type="text" id="trackingNR" placeholder="例：6589-1383-6114">
+        <label>配送タイプ</label>
+        <input type="text" id="deliveryType" placeholder="例：ネコポス（ポスト投函）、宅急便">
+      </div>
+
+      <!-- 遅延 -->
+      <div id="fields-delay" style="display:none">
+        <label>発送予定時期</label>
+        <input type="text" id="expectedDate" placeholder="例：来週中、今週末">
+        <label>遅延の理由（簡単に）</label>
+        <input type="text" id="delayReason" placeholder="例：当店の手配不備、入荷遅延">
+        <label>キャンセル受付（選択）</label>
+        <select id="cancelOption">
+          <option value="yes">キャンセルも承る</option>
+          <option value="no">キャンセルは受け付けない</option>
+        </select>
+      </div>
+
+      <!-- キャンセル不可 -->
+      <div id="fields-cancel_ng" style="display:none">
+        <label>理由</label>
+        <select id="cancelNGReason">
+          <option value="shipped">発送済みのため</option>
+          <option value="processing">発送手配完了のため</option>
+        </select>
+        <label>返品対応</label>
+        <select id="returnOpt">
+          <option value="yes">受取後の返品相談は承る</option>
+          <option value="no">返品は承れない</option>
+        </select>
+      </div>
+
+      <!-- クーポン送付済み -->
+      <div id="fields-coupon_sent" style="display:none">
+        <label>クーポンコード（任意）</label>
+        <input type="text" id="couponCode" placeholder="例：KD99-MHUE-S8JP-DJUF">
+        <label>割引額</label>
+        <input type="text" id="couponAmount" placeholder="例：300円OFF">
+        <label>有効期限（任意）</label>
+        <input type="text" id="couponExpiry" placeholder="例：4月30日まで">
+      </div>
+
+      <!-- クーポン再送 -->
+      <div id="fields-coupon_resend" style="display:none">
+        <label>再送先（任意）</label>
+        <input type="text" id="resendEmail" placeholder="ご登録のメールアドレス（空白でも可）">
+        <label>キャンペーン期限（任意）</label>
+        <input type="text" id="campaignEnd" placeholder="例：4月30日">
+      </div>
+
+      <!-- 返信不要 -->
+      <div id="fields-no_reply_needed">
+        <!-- No extra fields needed -->
+        <p class="hint" style="margin-top:0">お客様が「返信不要」と言っていても、ひと言添えて安心させます。</p>
+      </div>
+
+      <!-- 問い合わせ回答 -->
+      <div id="fields-inquiry_ack" style="display:none">
+        <label>問い合わせ内容（一言で）</label>
+        <input type="text" id="inquiryTopic" placeholder="例：配送状況の確認、商品状態について">
+        <label>回答内容（ざっくりと）</label>
+        <textarea id="inquiryAnswer" rows="3" placeholder="例：本日発送済み・追跡番号は〇〇・品質に問題なし など"></textarea>
+      </div>
+
+      <label>ショップ名（任意）</label>
+      <input type="text" id="shopName" placeholder="例：KAKO SHOP（空白でも可）">
+    </div>
+  </div>
+
+  <!-- 生成ボタン -->
+  <div class="card" style="padding:16px">
+    <button class="generate-btn" id="generateBtn">✨ 返信文を生成する</button>
+  </div>
+
+  <!-- 出力 -->
+  <div class="card">
+    <div class="section-title" style="margin-bottom:10px">③ 生成された返信文</div>
+    <div class="output-area">
+      <textarea id="output" readonly placeholder="「生成する」ボタンを押すと返信文がここに表示されます。"></textarea>
+      <button class="copy-btn" id="copyBtn">コピー</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const scenes = [
+    'shipping_done','not_received','delay','cancel_ng',
+    'coupon_sent','coupon_resend','no_reply_needed','inquiry_ack'
+  ];
+
+  let currentScene = 'shipping_done';
+
+  // シナリオ切り替え
+  document.querySelectorAll('.scenario-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentScene = btn.dataset.scene;
+      scenes.forEach(s => {
+        const el = document.getElementById('fields-' + s);
+        if (el) el.style.display = (s === currentScene) ? '' : 'none';
+      });
+    });
+  });
+
+  function val(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function greeting() {
+    return '平素より大変お世話になっております。';
+  }
+
+  function sign(shopName) {
+    return shopName ? `\n${shopName}` : '';
+  }
+
+  function generate() {
+    const name = val('customerName') || '〇〇';
+    const shop = val('shopName');
+    const shopLine = shop ? `\n${shop}` : '';
+    let body = '';
+
+    switch(currentScene) {
+      case 'shipping_done': {
+        const date = val('shipDate') || '本日';
+        const carrier = val('carrier') || 'ヤマト運輸';
+        const tracking = val('trackingNum');
+        const note = val('shipNote');
+        const trackingLine = tracking
+          ? `\nなお、追跡番号は【${tracking}】でございます。`
+          : '';
+        const noteLine = note
+          ? `\nこのたびは「${note}」のご注文を賜り、誠にありがとうございます。\n`
+          : '\nこのたびはご注文いただき、誠にありがとうございます。\n';
+
+        body = `${name} 様
+
+${greeting()}
+${noteLine}
+ご注文いただきました商品は、${date}（${carrier}）にて発送いたしましたのでご案内申し上げます。${trackingLine}
+
+商品のお届けまで今しばらくお待ちくださいますようお願い申し上げます。
+
+今後とも何卒よろしくお願い申し上げます。${shopLine}`;
+        break;
+      }
+
+      case 'not_received': {
+        const at = val('deliveredAt') || '〇月〇日';
+        const tracking = val('trackingNR') || '〇〇〇〇';
+        const dtype = val('deliveryType') || 'ネコポス';
+        const isPost = dtype.includes('ネコポス') || dtype.includes('ポスト');
+        const postLine = isPost
+          ? '\nネコポスでの配送のため、ポスト投函やご家族様・管理人様によるお受け取りの可能性もございますので、一度ご自宅のポストや周辺をご確認いただけますと幸いです。\n'
+          : '\n大変お手数ではございますが、ご不在票等もご確認いただけますと幸いです。\n';
+
+        body = `${name} 様
+
+${greeting()}
+
+このたびは商品のお受け取りにつき、ご不安な思いをおかけし誠に申し訳ございません。
+
+お荷物の配送状況を確認いたしましたところ、${dtype}にて【${at}頃】に配達完了の記録となっております。（追跡番号：${tracking}）
+${postLine}
+それでもお受け取りが確認できない場合は、大変お手数ではございますが、最寄りの配送業者の営業所へお問い合わせいただき、詳細な配達状況をご確認いただけますようお願い申し上げます。
+
+何かご不明な点がございましたら、お気軽にご連絡くださいませ。
+
+今後とも何卒よろしくお願い申し上げます。${shopLine}`;
+        break;
+      }
+
+      case 'delay': {
+        const expected = val('expectedDate') || '来週中';
+        const reason = val('delayReason') || '当店の手配不備';
+        const cancelOpt = val('cancelOption');
+        const cancelLine = cancelOpt === 'yes'
+          ? '\nお待ちいただくことが難しい場合は、キャンセルのご対応も承っておりますので、ご希望をお知らせくださいませ。'
+          : '';
+
+        body = `${name} 様
+
+${greeting()}
+
+このたびは商品の発送遅延につきまして、ご迷惑をおかけしておりますこと、心よりお詫び申し上げます。
+
+${reason}により発送が遅れてしまっておりますことを深くお詫び申し上げます。
+
+現在、${expected}の発送を予定しております。${cancelLine}
+
+ご不便・ご迷惑をおかけしましたこと、重ねてお詫び申し上げます。
+
+今後とも何卒よろしくお願い申し上げます。${shopLine}`;
+        break;
+      }
+
+      case 'cancel_ng': {
+        const reasonOpt = val('cancelNGReason');
+        const reasonText = reasonOpt === 'shipped' ? 'すでに発送が完了しているため' : '発送手配が完了しているため';
+        const returnOpt = val('returnOpt');
+        const returnLine = returnOpt === 'yes'
+          ? '\n商品お受け取り後にご不要の場合は、返品等のご相談も承っておりますので、お気軽にご連絡くださいませ。'
+          : '';
+
+        body = `${name} 様
+
+${greeting()}
+
+このたびはご注文いただき、誠にありがとうございます。
+
+ご連絡いただきましたキャンセルの件につきまして、大変恐れ入りますが、${reasonText}、現時点でのキャンセルはお受けいたしかねます。
+${returnLine}
+
+ご不便をおかけしておりますこと、深くお詫び申し上げます。
+
+何卒ご理解賜りますようお願い申し上げます。
+
+今後とも何卒よろしくお願い申し上げます。${shopLine}`;
+        break;
+      }
+
+      case 'coupon_sent': {
+        const code = val('couponCode');
+        const amount = val('couponAmount') || '〇〇円OFF';
+        const expiry = val('couponExpiry');
+        const codeLine = code ? `\nクーポンコード：【${code}】\n` : '\n';
+        const expiryLine = expiry ? `有効期限は${expiry}となっております。` : '';
+
+        body = `${name} 様
+
+${greeting()}
+
+このたびはレビューをご投稿いただき、誠にありがとうございます。
+また、温かいお言葉を頂戴し、大変嬉しく拝見いたしました。
+
+ご連絡いただいておりました特典の${amount}クーポンにつきまして、先ほどご登録のメールアドレス宛にお送りいたしましたのでご確認いただけますと幸いです。${codeLine}${expiryLine}
+
+万が一、メールが届いていない場合はお気軽にお申し付けくださいませ。
+
+今後ともどうぞよろしくお願い申し上げます。${shopLine}`;
+        break;
+      }
+
+      case 'coupon_resend': {
+        const resend = val('resendEmail');
+        const campaign = val('campaignEnd');
+        const resendTo = resend ? `「${resend}」` : 'ご登録のメールアドレス';
+        const campaignLine = campaign
+          ? `\nキャンペーン期間中（${campaign}まで）にご利用いただけますよう、できる限り対応させていただきます。`
+          : '';
+
+        body = `${name} 様
+
+${greeting()}
+
+このたびはご不便をおかけしており、誠に申し訳ございません。
+
+ご連絡いただきましたクーポンにつきまして、先ほど改めて${resendTo}宛に再送させていただきましたのでご確認いただけますと幸いです。${campaignLine}
+
+万が一、再度ご確認いただいてもメールが見当たらない場合は、迷惑メールフォルダや受信設定（ドメイン指定受信等）をご確認いただくか、別の方法でもご案内させていただきますので、お気軽にお申し付けくださいませ。
+
+このたびはお手数をおかけしましたこと、重ねてお詫び申し上げます。
+
+今後とも何卒よろしくお願い申し上げます。${shopLine}`;
+        break;
+      }
+
+      case 'no_reply_needed': {
+        body = `${name} 様
+
+${greeting()}
+
+その後ご確認いただけたとのことで、安心いたしました。
+ご丁寧にご連絡いただき、心より御礼申し上げます。
+
+引き続き何かご不明な点がございましたら、いつでもお気軽にご連絡くださいませ。
+
+今後とも何卒よろしくお願い申し上げます。${shopLine}`;
+        break;
+      }
+
+      case 'inquiry_ack': {
+        const topic = val('inquiryTopic') || 'お問い合わせ';
+        const answer = val('inquiryAnswer') || '（回答内容）';
+
+        body = `${name} 様
+
+${greeting()}
+
+このたびは${topic}につきましてお問い合わせいただき、誠にありがとうございます。
+
+${answer}
+
+ご不明な点がございましたら、引き続きお気軽にご連絡くださいませ。
+
+今後とも何卒よろしくお願い申し上げます。${shopLine}`;
+        break;
+      }
+    }
+
+    document.getElementById('output').value = body.trim();
+  }
+
+  document.getElementById('generateBtn').addEventListener('click', generate);
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const output = document.getElementById('output');
+    if (!output.value) return;
+    navigator.clipboard.writeText(output.value).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'コピー済み！';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'コピー';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  });
+</script>
+</body>
+</html>
