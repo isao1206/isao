@@ -1,1126 +1,425 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#667eea">
-    <title>タイムカード（共有版）</title>
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuOCv+OCpOODoOOCq+ODvOODiSIsCiAgInNob3J0X25hbWUiOiAi44K/44Kk44Og44Kr44O844OJIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmZmZmZmYiLAogICJ0aGVtZV9jb2xvciI6ICIjNjY3ZWVhIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIGZpbGw9JyU2NjdlZWEnLyUzRSUzQ3RleHQgeD0nNTAlMjUnIHk9JzUwJTI1JyBmb250LXNpemU9JzEyMCcgZmlsbD0nJWZmZicgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J2NlbnRyYWwnJTNF8J+TseKPsSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0KICBdCn0=">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>簡単タイムカード</title>
+  <style>
+    /* ===== 全体のリセットと基本スタイル ===== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 16px;
+    }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
+    /* ===== カード全体のコンテナ ===== */
+    .card {
+      background-color: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 480px;
+    }
 
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
+    /* ===== タイトル ===== */
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a202c;
+      text-align: center;
+      margin-bottom: 8px;
+    }
 
-        h1, h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
+    /* ===== 今日の日付 ===== */
+    .date {
+      font-size: 16px;
+      color: #718096;
+      text-align: center;
+      margin-bottom: 32px;
+    }
 
-        h1 {
-            font-size: 28px;
-            text-align: center;
-            color: white;
-            margin-bottom: 24px;
-        }
+    /* ===== 記録表示エリア ===== */
+    .records {
+      background-color: #f7fafc;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
 
-        h2 {
-            font-size: 20px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
-        }
+    /* ===== 各レコード行（ラベル＋値） ===== */
+    .record-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
 
-        .sync-status {
-            background: #d4edda;
-            color: #155724;
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 12px;
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            left: 10px;
-            max-width: 300px;
-            margin: 0 auto;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
+    /* 最後の行は区切り線なし */
+    .record-row:last-child {
+      border-bottom: none;
+    }
 
-        .sync-status.show {
-            opacity: 1;
-        }
+    /* ラベル（出勤・退勤・勤務時間） */
+    .record-label {
+      font-size: 15px;
+      color: #4a5568;
+      font-weight: 500;
+    }
 
-        .sync-status.syncing {
-            background: #fff3cd;
-            color: #856404;
-        }
+    /* 時刻・時間の値 */
+    .record-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2d3748;
+    }
 
-        .sync-status.error {
-            background: #f8d7da;
-            color: #721c24;
-        }
+    /* 未記録の場合のスタイル */
+    .record-value.empty {
+      font-size: 14px;
+      color: #a0aec0;
+      font-weight: 400;
+    }
 
-        .tab-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+    /* 勤務時間は色を変えて強調 */
+    .record-value.duration {
+      color: #3182ce;
+    }
 
-        .tab {
-            flex: 1;
-            padding: 12px;
-            background: #f0f0f0;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
+    /* ===== ボタンエリア ===== */
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-        .tab.active {
-            background: #667eea;
-            color: white;
-        }
+    /* ボタン共通スタイル */
+    .btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 14px 8px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
 
-        .tab-content {
-            display: none;
-        }
+    .btn:active {
+      transform: scale(0.97);
+    }
 
-        .tab-content.active {
-            display: block;
-        }
+    /* 出勤ボタン（緑系） */
+    .btn-checkin {
+      background-color: #48bb78;
+      color: #ffffff;
+    }
 
-        .user-select {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
+    .btn-checkin:hover {
+      opacity: 0.88;
+    }
 
-        .clock-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+    /* 退勤ボタン（青系） */
+    .btn-checkout {
+      background-color: #4299e1;
+      color: #ffffff;
+    }
 
-        .btn {
-            padding: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+    .btn-checkout:hover {
+      opacity: 0.88;
+    }
 
-        .btn:active {
-            transform: scale(0.95);
-        }
+    /* リセットボタン（グレー系） */
+    .btn-reset {
+      background-color: #e2e8f0;
+      color: #4a5568;
+    }
 
-        .btn-clock-in {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
-        }
+    .btn-reset:hover {
+      opacity: 0.78;
+    }
 
-        .btn-clock-out {
-            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(238, 9, 121, 0.4);
-        }
+    /* ===== 無効状態のボタン ===== */
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-        .btn-primary {
-            background: #667eea;
-            color: white;
-            padding: 12px 24px;
-            font-size: 16px;
-        }
+    /* ===== メッセージ表示エリア ===== */
+    .message {
+      margin-top: 20px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      display: none; /* 初期は非表示 */
+    }
 
-        .btn-refresh {
-            background: #28a745;
-            color: white;
-            padding: 8px 16px;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
+    .message.success {
+      background-color: #c6f6d5;
+      color: #276749;
+    }
 
-        .current-status {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .status-working {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-off {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .record-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .record-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .record-details {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .location-info {
-            font-size: 12px;
-            color: #999;
-            margin-top: 5px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .user-list {
-            list-style: none;
-        }
-
-        .user-item {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .month-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        .month-selector input {
-            margin: 0;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-
-        .gps-status {
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .alert {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .device-info {
-            font-size: 12px;
-            color: #666;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .online-users {
-            background: #e7f3ff;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-    </style>
+    .message.info {
+      background-color: #bee3f8;
+      color: #2c5282;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⏱️ タイムカード（全社共有）</h1>
 
-        <div class="sync-status" id="syncStatus">
-            🔄 同期中...
-        </div>
+<div class="card">
 
-        <div class="card">
-            <div class="tab-container">
-                <button class="tab active" onclick="switchTab('punch')">打刻</button>
-                <button class="tab" onclick="switchTab('history')">履歴</button>
-                <button class="tab" onclick="switchTab('report')">レポート</button>
-                <button class="tab" onclick="switchTab('users')">社員管理</button>
-                <button class="tab" onclick="switchTab('admin')">管理</button>
-            </div>
+  <!-- タイトル -->
+  <h1 class="title">簡単タイムカード</h1>
 
-            <!-- 打刻タブ -->
-            <div id="tab-punch" class="tab-content active">
-                <h2>打刻</h2>
-                
-                <button class="btn btn-refresh" onclick="syncData()">
-                    🔄 最新データに更新
-                </button>
+  <!-- 今日の日付（JSで動的に表示） -->
+  <p class="date" id="today-date"></p>
 
-                <select id="currentUser" class="user-select">
-                    <option value="">社員を選択してください</option>
-                </select>
-
-                <div id="currentStatus" class="current-status">
-                    ステータス: 未選択
-                </div>
-
-                <div class="clock-buttons">
-                    <button class="btn btn-clock-in" onclick="clockIn()">
-                        ▶ 出勤
-                    </button>
-                    <button class="btn btn-clock-out" onclick="clockOut()">
-                        ■ 退勤
-                    </button>
-                </div>
-
-                <div class="gps-status" id="gpsStatus">
-                    📍 位置情報を取得中...
-                </div>
-
-                <div class="device-info" id="deviceInfo">
-                    📱 端末ID: 読み込み中...
-                </div>
-
-                <div id="alertContainer"></div>
-            </div>
-
-            <!-- 履歴タブ -->
-            <div id="tab-history" class="tab-content">
-                <h2>打刻履歴</h2>
-                
-                <button class="btn btn-refresh" onclick="syncData(); loadHistory();">
-                    🔄 最新データに更新
-                </button>
-                
-                <select id="historyUser" class="user-select" onchange="loadHistory()">
-                    <option value="">すべての社員</option>
-                </select>
-
-                <div id="historyList"></div>
-            </div>
-
-            <!-- レポートタブ -->
-            <div id="tab-report" class="tab-content">
-                <h2>月次レポート</h2>
-                
-                <button class="btn btn-refresh" onclick="syncData(); generateReport();">
-                    🔄 最新データに更新
-                </button>
-                
-                <select id="reportUser" class="user-select" onchange="generateReport()">
-                    <option value="">社員を選択してください</option>
-                </select>
-
-                <div class="month-selector">
-                    <label>対象月:</label>
-                    <input type="month" id="reportMonth" onchange="generateReport()">
-                </div>
-
-                <div class="stats" id="reportStats"></div>
-
-                <div id="reportDetails"></div>
-            </div>
-
-            <!-- 社員管理タブ -->
-            <div id="tab-users" class="tab-content">
-                <h2>社員管理</h2>
-                
-                <input type="text" id="newUserName" placeholder="新しい社員名を入力">
-                <button class="btn btn-primary" onclick="addUser()">社員を追加</button>
-
-                <h3 style="margin: 20px 0 10px 0;">登録社員</h3>
-                <ul class="user-list" id="userList"></ul>
-            </div>
-
-            <!-- 管理タブ -->
-            <div id="tab-admin" class="tab-content">
-                <h2>システム管理</h2>
-                
-                <div class="online-users" id="onlineUsers">
-                    📊 アクティブ端末: 確認中...
-                </div>
-
-                <h3 style="margin: 20px 0 10px 0;">データバックアップ</h3>
-                <div style="display: grid; gap: 10px;">
-                    <button class="btn btn-primary" onclick="exportData()">
-                        📥 全データをエクスポート
-                    </button>
-                    <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">
-                        📤 データをインポート
-                    </button>
-                    <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
-                    
-                    <button class="btn btn-primary" onclick="forceSync()" style="background: #28a745;">
-                        🔄 全端末を強制同期
-                    </button>
-                    
-                    <div style="margin-top: 10px; padding: 12px; background: #fff3cd; border-radius: 8px; font-size: 14px;">
-                        💡 このアプリは全ての端末でデータを共有します。どの端末で打刻しても、全ての端末に自動的に反映されます。
-                    </div>
-                    
-                    <div id="lastSync" style="font-size: 12px; color: #666; text-align: center; margin-top: 10px;"></div>
-                </div>
-
-                <h3 style="margin: 20px 0 10px 0;">危険な操作</h3>
-                <button class="btn" style="background: #dc3545; color: white;" onclick="clearAllData()">
-                    🗑️ 全データを削除（全端末）
-                </button>
-            </div>
-        </div>
+  <!-- 記録表示エリア -->
+  <div class="records">
+    <div class="record-row">
+      <span class="record-label">出勤時刻</span>
+      <span class="record-value empty" id="checkin-time">未記録</span>
     </div>
+    <div class="record-row">
+      <span class="record-label">退勤時刻</span>
+      <span class="record-value empty" id="checkout-time">未記録</span>
+    </div>
+    <div class="record-row">
+      <span class="record-label">勤務時間</span>
+      <span class="record-value empty" id="duration">未記録</span>
+    </div>
+  </div>
+
+  <!-- ボタン3つ -->
+  <div class="buttons">
+    <button class="btn btn-checkin"  id="btn-checkin"  onclick="recordCheckin()">出勤</button>
+    <button class="btn btn-checkout" id="btn-checkout" onclick="recordCheckout()">退勤</button>
+    <button class="btn btn-reset"    id="btn-reset"    onclick="resetRecord()">リセット</button>
+  </div>
+
+  <!-- 操作後のフィードバックメッセージ -->
+  <p class="message" id="message"></p>
+
+</div>
+
+<script>
+  // ===== キー定義（localStorageに保存するときのキー名） =====
+  const STORAGE_KEY_CHECKIN  = 'timecard_checkin';   // 出勤時刻
+  const STORAGE_KEY_CHECKOUT = 'timecard_checkout';  // 退勤時刻
+  const STORAGE_KEY_DATE     = 'timecard_date';      // 記録した日付
+
+  // ===== 今日の日付を「YYYY-MM-DD」形式で返す =====
+  function getTodayString() {
+    var now = new Date();
+    var y = now.getFullYear();
+    var m = String(now.getMonth() + 1).padStart(2, '0');
+    var d = String(now.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+  // ===== 今日の日付を日本語表記で返す（例：2025年4月14日（月）） =====
+  function getTodayLabel() {
+    var now = new Date();
+    var weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+    var y = now.getFullYear();
+    var m = now.getMonth() + 1;
+    var d = now.getDate();
+    var w = weekdays[now.getDay()];
+    return y + '年' + m + '月' + d + '日（' + w + '）';
+  }
+
+  // ===== 現在時刻を「HH:MM:SS」形式で返す =====
+  function getCurrentTimeString() {
+    var now = new Date();
+    var h = String(now.getHours()).padStart(2, '0');
+    var m = String(now.getMinutes()).padStart(2, '0');
+    var s = String(now.getSeconds()).padStart(2, '0');
+    return h + ':' + m + ':' + s;
+  }
+
+  // ===== 2つの時刻文字列（HH:MM:SS）から勤務時間を計算して返す =====
+  // 例: '09:00:00' と '18:30:00' → '9時間30分'
+  function calcDuration(checkin, checkout) {
+    // 「HH:MM:SS」を分単位の数値に変換する
+    function toMinutes(timeStr) {
+      var parts = timeStr.split(':').map(Number);
+      return parts[0] * 60 + parts[1] + parts[2] / 60;
+    }
+
+    var diffMinutes = toMinutes(checkout) - toMinutes(checkin);
+
+    // 退勤が出勤より前の場合（日付をまたいだケース等）はnullを返す
+    if (diffMinutes < 0) {
+      return null;
+    }
+
+    var hours = Math.floor(diffMinutes / 60);
+    var mins  = Math.floor(diffMinutes % 60);
+    return hours + '時間' + mins + '分';
+  }
+
+  // ===== 画面の表示を更新する =====
+  function updateDisplay(checkin, checkout) {
+    var checkinEl  = document.getElementById('checkin-time');
+    var checkoutEl = document.getElementById('checkout-time');
+    var durationEl = document.getElementById('duration');
+
+    // 出勤時刻の表示
+    if (checkin) {
+      checkinEl.textContent = checkin;
+      checkinEl.className = 'record-value';
+    } else {
+      checkinEl.textContent = '未記録';
+      checkinEl.className = 'record-value empty';
+    }
+
+    // 退勤時刻の表示
+    if (checkout) {
+      checkoutEl.textContent = checkout;
+      checkoutEl.className = 'record-value';
+    } else {
+      checkoutEl.textContent = '未記録';
+      checkoutEl.className = 'record-value empty';
+    }
+
+    // 勤務時間の表示（出勤・退勤の両方がある場合のみ計算）
+    if (checkin && checkout) {
+      var duration = calcDuration(checkin, checkout);
+      if (duration !== null) {
+        durationEl.textContent = duration;
+        durationEl.className = 'record-value duration'; // 青色で表示
+      } else {
+        durationEl.textContent = '計算できません';
+        durationEl.className = 'record-value empty';
+      }
+    } else {
+      durationEl.textContent = '未記録';
+      durationEl.className = 'record-value empty';
+    }
+
+    // ボタンの有効・無効を切り替える
+    updateButtons(checkin, checkout);
+  }
+
+  // ===== ボタンの有効・無効を状態に応じて切り替える =====
+  function updateButtons(checkin, checkout) {
+    var checkinBtn  = document.getElementById('btn-checkin');
+    var checkoutBtn = document.getElementById('btn-checkout');
+    var resetBtn    = document.getElementById('btn-reset');
+
+    // 出勤済みなら「出勤」ボタンを無効化
+    checkinBtn.disabled = !!checkin;
+
+    // 出勤前、または退勤済みなら「退勤」ボタンを無効化
+    checkoutBtn.disabled = !checkin || !!checkout;
+
+    // 記録が何もなければ「リセット」ボタンを無効化
+    resetBtn.disabled = !checkin && !checkout;
+  }
+
+  // ===== メッセージを一定時間表示する =====
+  function showMessage(text, type) {
+    var el = document.getElementById('message');
+    el.textContent = text;
+    el.className = 'message ' + (type || 'success');
+    el.style.display = 'block';
+
+    // 3秒後に自動的に非表示にする
+    setTimeout(function() {
+      el.style.display = 'none';
+    }, 3000);
+  }
+
+  // ===== 出勤ボタンが押されたときの処理 =====
+  function recordCheckin() {
+    var today   = getTodayString();
+    var nowTime = getCurrentTimeString();
+
+    // localStorageに保存
+    localStorage.setItem(STORAGE_KEY_DATE,    today);
+    localStorage.setItem(STORAGE_KEY_CHECKIN, nowTime);
+
+    // 画面を更新
+    updateDisplay(nowTime, null);
+    showMessage('出勤を記録しました：' + nowTime, 'success');
+  }
+
+  // ===== 退勤ボタンが押されたときの処理 =====
+  function recordCheckout() {
+    var nowTime = getCurrentTimeString();
+    var checkin = localStorage.getItem(STORAGE_KEY_CHECKIN);
+
+    // 出勤記録がない場合は処理しない（念のため）
+    if (!checkin) {
+      showMessage('先に出勤を記録してください', 'info');
+      return;
+    }
+
+    // localStorageに保存
+    localStorage.setItem(STORAGE_KEY_CHECKOUT, nowTime);
+
+    // 画面を更新
+    updateDisplay(checkin, nowTime);
+    showMessage('退勤を記録しました：' + nowTime, 'success');
+  }
+
+  // ===== リセットボタンが押されたときの処理 =====
+  function resetRecord() {
+    // localStorageのタイムカード関連データを削除
+    localStorage.removeItem(STORAGE_KEY_CHECKIN);
+    localStorage.removeItem(STORAGE_KEY_CHECKOUT);
+    localStorage.removeItem(STORAGE_KEY_DATE);
+
+    // 画面を初期状態に戻す
+    updateDisplay(null, null);
+    showMessage('記録をリセットしました', 'info');
+  }
+
+  // ===== ページ読み込み時の初期化処理 =====
+  function init() {
+    // 今日の日付を表示
+    document.getElementById('today-date').textContent = getTodayLabel();
+
+    // localStorageから保存済みデータを読み込む
+    var savedDate     = localStorage.getItem(STORAGE_KEY_DATE);
+    var savedCheckin  = localStorage.getItem(STORAGE_KEY_CHECKIN);
+    var savedCheckout = localStorage.getItem(STORAGE_KEY_CHECKOUT);
+    var today         = getTodayString();
+
+    // 保存された日付が今日と同じ場合のみデータを復元する
+    // （昨日以前のデータは表示しない）
+    if (savedDate === today && savedCheckin) {
+      updateDisplay(savedCheckin, savedCheckout || null);
+    } else {
+      // 日付が変わっていたら古いデータをクリア
+      if (savedDate && savedDate !== today) {
+        localStorage.removeItem(STORAGE_KEY_CHECKIN);
+        localStorage.removeItem(STORAGE_KEY_CHECKOUT);
+        localStorage.removeItem(STORAGE_KEY_DATE);
+      }
+      updateDisplay(null, null);
+    }
+  }
+
+  // ページ読み込み完了後に初期化を実行
+  init();
+</script>
 
-    <script>
-        // グローバル変数
-        let users = [];
-        let records = [];
-        let currentLocation = null;
-        let deviceId = '';
-        let syncInterval = null;
-
-        // 端末IDの生成または取得
-        function getDeviceId() {
-            let id = localStorage.getItem('device_id');
-            if (!id) {
-                id = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('device_id', id);
-            }
-            deviceId = id;
-            updateDeviceInfo();
-        }
-
-        // 端末情報の表示
-        function updateDeviceInfo() {
-            const deviceInfo = document.getElementById('deviceInfo');
-            const deviceType = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'スマホ' : 'PC';
-            deviceInfo.textContent = `📱 端末: ${deviceType} (ID: ${deviceId.substr(-8)})`;
-        }
-
-        // 初期化
-        async function init() {
-            getDeviceId();
-            await syncData(true); // サイレント読み込み
-            updateUserSelects();
-            updateCurrentStatus();
-            updateLastSyncTime();
-            requestLocation();
-            
-            // 現在の月を設定
-            const now = new Date();
-            document.getElementById('reportMonth').value = 
-                `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-            
-            // 定期同期（30秒ごと）- すべてサイレント
-            syncInterval = setInterval(async () => {
-                await syncData(true);
-            }, 30000);
-
-            console.log(`初期化完了: ${users.length}社員, ${records.length}記録`);
-        }
-
-        // データの同期（共有ストレージから読み込み）
-        async function syncData(silent = false) {
-            if (!silent) {
-                setSyncStatus('syncing', '🔄 同期中...');
-            }
-
-            try {
-                // 共有ストレージから読み込み（shared: true）
-                const usersData = await window.storage.get('timecard_shared_users', true);
-                const recordsData = await window.storage.get('timecard_shared_records', true);
-                
-                users = usersData ? JSON.parse(usersData.value) : [];
-                records = recordsData ? JSON.parse(recordsData.value) : [];
-                
-                if (!silent) {
-                    updateUserSelects();
-                    updateCurrentStatus();
-                    updateLastSyncTime();
-                    setSyncStatus('success', '✅ 同期完了');
-                } else {
-                    // サイレント同期でもUIは更新
-                    updateUserSelects();
-                    updateCurrentStatus();
-                    updateLastSyncTime();
-                }
-                
-                console.log('同期成功:', users.length, '社員,', records.length, '記録');
-                return true;
-            } catch (error) {
-                console.error('同期エラー:', error);
-                if (!silent) {
-                    setSyncStatus('error', '⚠️ 同期エラー');
-                }
-                return false;
-            }
-        }
-
-        // データの保存（共有ストレージに保存）
-        async function saveData() {
-            // 保存中は表示しない（邪魔なので）
-
-            try {
-                // 共有ストレージに保存（shared: true）
-                await window.storage.set('timecard_shared_users', JSON.stringify(users), true);
-                await window.storage.set('timecard_shared_records', JSON.stringify(records), true);
-                
-                // 最終更新情報も保存
-                const updateInfo = {
-                    timestamp: new Date().toISOString(),
-                    deviceId: deviceId
-                };
-                await window.storage.set('timecard_last_update', JSON.stringify(updateInfo), true);
-                
-                updateLastSyncTime();
-                // 保存成功は一瞬だけ表示
-                setSyncStatus('success', '✅ 保存完了');
-                
-                console.log('保存成功');
-                return true;
-            } catch (error) {
-                console.error('保存エラー:', error);
-                setSyncStatus('error', '⚠️ 保存エラー');
-                showAlert('データの保存に失敗しました', 'error');
-                return false;
-            }
-        }
-
-        // 同期ステータスの表示
-        function setSyncStatus(type, message) {
-            const statusDiv = document.getElementById('syncStatus');
-            statusDiv.className = 'sync-status show';
-            
-            if (type === 'syncing') {
-                statusDiv.classList.add('syncing');
-            } else if (type === 'error') {
-                statusDiv.classList.add('error');
-            }
-            statusDiv.textContent = message;
-
-            // 成功時は1秒後に非表示、エラー時は3秒後に非表示
-            const hideDelay = type === 'error' ? 3000 : 1000;
-            setTimeout(() => {
-                statusDiv.classList.remove('show');
-            }, hideDelay);
-        }
-
-        // 最終同期時刻の更新
-        async function updateLastSyncTime() {
-            try {
-                const updateInfo = await window.storage.get('timecard_last_update', true);
-                const lastSyncDiv = document.getElementById('lastSync');
-                
-                if (updateInfo) {
-                    const info = JSON.parse(updateInfo.value);
-                    const date = new Date(info.timestamp);
-                    lastSyncDiv.textContent = `最終更新: ${date.toLocaleString('ja-JP')} (端末: ${info.deviceId.substr(-8)})`;
-                }
-            } catch (error) {
-                console.log('最終同期時刻取得エラー:', error);
-            }
-        }
-
-        // 位置情報の取得
-        function requestLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        currentLocation = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude,
-                            accuracy: position.coords.accuracy
-                        };
-                        document.getElementById('gpsStatus').textContent = 
-                            `📍 位置情報取得済み (精度: ${Math.round(currentLocation.accuracy)}m)`;
-                    },
-                    (error) => {
-                        document.getElementById('gpsStatus').textContent = 
-                            '⚠️ 位置情報の取得に失敗しました';
-                    }
-                );
-            } else {
-                document.getElementById('gpsStatus').textContent = 
-                    '⚠️ 位置情報はサポートされていません';
-            }
-        }
-
-        // ユーザー選択の更新
-        function updateUserSelects() {
-            const selects = ['currentUser', 'historyUser', 'reportUser'];
-            selects.forEach(selectId => {
-                const select = document.getElementById(selectId);
-                const currentValue = select.value;
-                const firstOption = select.options[0];
-                
-                select.innerHTML = '';
-                select.appendChild(firstOption);
-                
-                users.forEach(user => {
-                    const option = document.createElement('option');
-                    option.value = user.id;
-                    option.textContent = user.name;
-                    select.appendChild(option);
-                });
-                
-                select.value = currentValue;
-            });
-
-            updateUserList();
-        }
-
-        // ユーザーリストの更新
-        function updateUserList() {
-            const userList = document.getElementById('userList');
-            userList.innerHTML = '';
-
-            if (users.length === 0) {
-                userList.innerHTML = '<div class="empty-state">社員が登録されていません</div>';
-                return;
-            }
-
-            users.forEach(user => {
-                const li = document.createElement('li');
-                li.className = 'user-item';
-                li.innerHTML = `
-                    <span>${user.name}</span>
-                    <button class="btn-delete" onclick="deleteUser('${user.id}')">削除</button>
-                `;
-                userList.appendChild(li);
-            });
-        }
-
-        // ユーザー追加
-        async function addUser() {
-            const input = document.getElementById('newUserName');
-            const name = input.value.trim();
-
-            if (!name) {
-                showAlert('社員名を入力してください', 'error');
-                return;
-            }
-
-            const user = {
-                id: 'user_' + Date.now(),
-                name: name,
-                createdAt: new Date().toISOString(),
-                createdBy: deviceId
-            };
-
-            users.push(user);
-            await saveData();
-            
-            input.value = '';
-            updateUserSelects();
-            showAlert(`${name} を追加しました（全端末に反映済み）`, 'success');
-        }
-
-        // ユーザー削除
-        async function deleteUser(userId) {
-            if (!confirm('この社員を削除してもよろしいですか？\n関連する打刻記録も削除されます。\n※全ての端末から削除されます')) {
-                return;
-            }
-
-            users = users.filter(u => u.id !== userId);
-            records = records.filter(r => r.userId !== userId);
-            
-            await saveData();
-            updateUserSelects();
-            showAlert('社員を削除しました（全端末に反映済み）', 'success');
-        }
-
-        // 出勤
-        async function clockIn() {
-            const userId = document.getElementById('currentUser').value;
-            
-            if (!userId) {
-                showAlert('社員を選択してください', 'error');
-                return;
-            }
-
-            const user = users.find(u => u.id === userId);
-            
-            // すでに出勤中かチェック
-            const lastRecord = records
-                .filter(r => r.userId === userId)
-                .sort((a, b) => new Date(b.clockIn) - new Date(a.clockIn))[0];
-
-            if (lastRecord && !lastRecord.clockOut) {
-                showAlert('すでに出勤中です', 'error');
-                return;
-            }
-
-            const record = {
-                id: 'record_' + Date.now(),
-                userId: userId,
-                userName: user.name,
-                clockIn: new Date().toISOString(),
-                clockOut: null,
-                location: currentLocation,
-                deviceId: deviceId
-            };
-
-            records.push(record);
-            await saveData();
-
-            updateCurrentStatus();
-            showAlert('出勤を記録しました（全端末に反映済み）', 'success');
-            requestLocation();
-        }
-
-        // 退勤
-        async function clockOut() {
-            const userId = document.getElementById('currentUser').value;
-            
-            if (!userId) {
-                showAlert('社員を選択してください', 'error');
-                return;
-            }
-
-            // 最新の出勤記録を取得
-            const lastRecord = records
-                .filter(r => r.userId === userId && !r.clockOut)
-                .sort((a, b) => new Date(b.clockIn) - new Date(a.clockIn))[0];
-
-            if (!lastRecord) {
-                showAlert('出勤記録がありません', 'error');
-                return;
-            }
-
-            lastRecord.clockOut = new Date().toISOString();
-            lastRecord.clockOutLocation = currentLocation;
-            lastRecord.clockOutDeviceId = deviceId;
-            
-            await saveData();
-
-            updateCurrentStatus();
-            
-            const duration = calculateDuration(lastRecord.clockIn, lastRecord.clockOut);
-            showAlert(`退勤を記録しました (勤務時間: ${duration})（全端末に反映済み）`, 'success');
-            requestLocation();
-        }
-
-        // 現在のステータス更新
-        function updateCurrentStatus() {
-            const userId = document.getElementById('currentUser').value;
-            const statusDiv = document.getElementById('currentStatus');
-
-            if (!userId) {
-                statusDiv.className = 'current-status';
-                statusDiv.textContent = 'ステータス: 未選択';
-                return;
-            }
-
-            const user = users.find(u => u.id === userId);
-            const lastRecord = records
-                .filter(r => r.userId === userId)
-                .sort((a, b) => new Date(b.clockIn) - new Date(a.clockIn))[0];
-
-            if (!lastRecord || lastRecord.clockOut) {
-                statusDiv.className = 'current-status status-off';
-                statusDiv.textContent = `${user.name}: 退勤中`;
-            } else {
-                statusDiv.className = 'current-status status-working';
-                const duration = calculateDuration(lastRecord.clockIn, new Date().toISOString());
-                statusDiv.textContent = `${user.name}: 勤務中 (${duration})`;
-            }
-        }
-
-        // ユーザー選択変更時
-        document.getElementById('currentUser').addEventListener('change', updateCurrentStatus);
-
-        // 履歴の読み込み
-        function loadHistory() {
-            const userId = document.getElementById('historyUser').value;
-            const historyList = document.getElementById('historyList');
-
-            let filteredRecords = [...records];
-            if (userId) {
-                filteredRecords = filteredRecords.filter(r => r.userId === userId);
-            }
-
-            filteredRecords.sort((a, b) => new Date(b.clockIn) - new Date(a.clockIn));
-
-            if (filteredRecords.length === 0) {
-                historyList.innerHTML = '<div class="empty-state">打刻履歴がありません</div>';
-                return;
-            }
-
-            historyList.innerHTML = filteredRecords.map(record => `
-                <div class="record-item">
-                    <div class="record-header">
-                        <span>${record.userName}</span>
-                        <span>${new Date(record.clockIn).toLocaleDateString('ja-JP')}</span>
-                    </div>
-                    <div class="record-details">
-                        出勤: ${formatTime(record.clockIn)}
-                        ${record.clockOut ? `→ 退勤: ${formatTime(record.clockOut)}` : '(勤務中)'}
-                    </div>
-                    ${record.clockOut ? `
-                        <div class="record-details">
-                            勤務時間: ${calculateDuration(record.clockIn, record.clockOut)}
-                        </div>
-                    ` : ''}
-                    ${record.location ? `
-                        <div class="location-info">
-                            📍 出勤位置: ${record.location.lat.toFixed(6)}, ${record.location.lng.toFixed(6)}
-                            ${record.deviceId ? ` | 端末: ${record.deviceId.substr(-8)}` : ''}
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
-        }
-
-        // レポート生成
-        function generateReport() {
-            const userId = document.getElementById('reportUser').value;
-            const monthValue = document.getElementById('reportMonth').value;
-
-            if (!userId || !monthValue) {
-                document.getElementById('reportStats').innerHTML = '';
-                document.getElementById('reportDetails').innerHTML = 
-                    '<div class="empty-state">社員と月を選択してください</div>';
-                return;
-            }
-
-            const [year, month] = monthValue.split('-').map(Number);
-            const user = users.find(u => u.id === userId);
-
-            // 対象月の記録を抽出
-            const monthRecords = records.filter(r => {
-                if (r.userId !== userId || !r.clockOut) return false;
-                const date = new Date(r.clockIn);
-                return date.getFullYear() === year && date.getMonth() + 1 === month;
-            });
-
-            // 統計計算
-            let totalMinutes = 0;
-            let totalDays = new Set();
-
-            monthRecords.forEach(record => {
-                const start = new Date(record.clockIn);
-                const end = new Date(record.clockOut);
-                const minutes = (end - start) / 1000 / 60;
-                totalMinutes += minutes;
-                totalDays.add(start.toDateString());
-            });
-
-            const totalHours = Math.floor(totalMinutes / 60);
-            const avgHoursPerDay = totalDays.size > 0 ? (totalMinutes / 60 / totalDays.size).toFixed(1) : 0;
-
-            // 統計表示
-            document.getElementById('reportStats').innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-value">${totalDays.size}</div>
-                    <div class="stat-label">出勤日数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${totalHours}h</div>
-                    <div class="stat-label">総勤務時間</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${avgHoursPerDay}h</div>
-                    <div class="stat-label">平均勤務時間/日</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${monthRecords.length}</div>
-                    <div class="stat-label">打刻回数</div>
-                </div>
-            `;
-
-            // 詳細表示
-            if (monthRecords.length === 0) {
-                document.getElementById('reportDetails').innerHTML = 
-                    '<div class="empty-state">この月の記録がありません</div>';
-                return;
-            }
-
-            document.getElementById('reportDetails').innerHTML = `
-                <h3 style="margin: 20px 0 10px 0;">詳細</h3>
-                ${monthRecords.map(record => `
-                    <div class="record-item">
-                        <div class="record-header">
-                            <span>${new Date(record.clockIn).toLocaleDateString('ja-JP')}</span>
-                            <span>${calculateDuration(record.clockIn, record.clockOut)}</span>
-                        </div>
-                        <div class="record-details">
-                            ${formatTime(record.clockIn)} - ${formatTime(record.clockOut)}
-                        </div>
-                    </div>
-                `).join('')}
-            `;
-        }
-
-        // タブ切り替え
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            event.target.classList.add('active');
-            document.getElementById('tab-' + tabName).classList.add('active');
-
-            if (tabName === 'history') {
-                loadHistory();
-            } else if (tabName === 'report') {
-                generateReport();
-            }
-        }
-
-        // アラート表示
-        function showAlert(message, type) {
-            const container = document.getElementById('alertContainer');
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            
-            container.innerHTML = '';
-            container.appendChild(alert);
-
-            setTimeout(() => {
-                alert.remove();
-            }, 3000);
-        }
-
-        // 時刻フォーマット
-        function formatTime(isoString) {
-            const date = new Date(isoString);
-            return date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
-        }
-
-        // 勤務時間計算
-        function calculateDuration(start, end) {
-            const startDate = new Date(start);
-            const endDate = new Date(end);
-            const diffMs = endDate - startDate;
-            const hours = Math.floor(diffMs / 1000 / 60 / 60);
-            const minutes = Math.floor((diffMs / 1000 / 60) % 60);
-            return `${hours}時間${minutes}分`;
-        }
-
-        // データエクスポート
-        function exportData() {
-            const exportData = {
-                version: '2.0',
-                exportDate: new Date().toISOString(),
-                deviceId: deviceId,
-                users: users,
-                records: records
-            };
-
-            const dataStr = JSON.stringify(exportData, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `timecard_shared_backup_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-
-            showAlert('データをエクスポートしました', 'success');
-        }
-
-        // データインポート
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    if (!importedData.users || !importedData.records) {
-                        showAlert('無効なバックアップファイルです', 'error');
-                        return;
-                    }
-
-                    if (confirm('現在のデータは上書きされます。\n※全ての端末のデータが更新されます。\n\nインポートを続行しますか？')) {
-                        users = importedData.users;
-                        records = importedData.records;
-                        
-                        await saveData();
-                        
-                        updateUserSelects();
-                        updateCurrentStatus();
-                        
-                        showAlert('データをインポートしました（全端末に反映済み）', 'success');
-                    }
-                } catch (error) {
-                    console.error('インポートエラー:', error);
-                    showAlert('データのインポートに失敗しました', 'error');
-                }
-            };
-            reader.readAsText(file);
-            
-            event.target.value = '';
-        }
-
-        // 強制同期
-        async function forceSync() {
-            if (confirm('全ての端末でデータを最新状態に同期します。よろしいですか？')) {
-                await saveData();
-                await syncData();
-                showAlert('強制同期を実行しました', 'success');
-            }
-        }
-
-        // 全データ削除
-        async function clearAllData() {
-            if (!confirm('⚠️ 警告 ⚠️\n\n全ての社員データと打刻記録を削除します。\nこの操作は全ての端末に反映され、元に戻すことはできません。\n\n本当に削除しますか？')) {
-                return;
-            }
-
-            if (!confirm('最終確認：本当に全データを削除しますか？')) {
-                return;
-            }
-
-            users = [];
-            records = [];
-            
-            await saveData();
-            
-            updateUserSelects();
-            updateCurrentStatus();
-            
-            showAlert('全データを削除しました（全端末に反映済み）', 'success');
-        }
-
-        // ページ読み込み時に初期化
-        window.addEventListener('load', init);
-
-        // ページを閉じる前に保存
-        window.addEventListener('beforeunload', async () => {
-            await saveData();
-        });
-
-        // ページが非表示になる時も保存
-        document.addEventListener('visibilitychange', async () => {
-            if (document.hidden) {
-                await saveData();
-            }
-        });
-
-        // ページが再度表示された時に同期
-        document.addEventListener('visibilitychange', async () => {
-            if (!document.hidden) {
-                await syncData(true);
-                updateCurrentStatus();
-            }
-        });
-    </script>
 </body>
 </html>
