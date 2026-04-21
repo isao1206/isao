@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <title>過去給与休日率計算ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 22px;
+            text-align: center;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+        }
+
+        h3 {
+            font-size: 15px;
+            color: #555;
+            margin: 12px 0 8px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="month"],
+        input[type="date"] {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #667eea;
+        }
+
+        .month-block {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+            border-left: 4px solid #667eea;
+        }
+
+        .month-block h3 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-calc {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #555;
+            margin-top: 10px;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .result-table th,
+        .result-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .result-table th {
+            color: #666;
+            font-weight: 600;
+            width: 55%;
+        }
+
+        .result-table td {
+            text-align: right;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .highlight-row th,
+        .highlight-row td {
+            background: #eef0ff;
+            color: #667eea;
+            font-size: 15px;
+        }
+
+        .holiday-row th,
+        .holiday-row td {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .holiday-legal th,
+        .holiday-legal td {
+            background: #fce4ec;
+            color: #c62828;
+        }
+
+        .result-empty {
+            text-align: center;
+            color: #aaa;
+            padding: 30px 0;
+            font-size: 14px;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 16px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .badge-legal {
+            background: #fce4ec;
+            color: #c62828;
+        }
+
+        .badge-contract {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .alert-warn {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+
+        .work-days-input {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .mini-label {
+            font-size: 12px;
+            color: #666;
+            display: block;
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 過去給与休日率計算ツール</h1>
+
+        <!-- 基本情報 -->
+        <div class="card">
+            <h2>基本情報</h2>
+            <div class="form-group">
+                <label>社員名（任意）</label>
+                <input type="text" id="employeeName" placeholder="例：山田 太郎">
+            </div>
+            <div class="form-group">
+                <label>算定基準日（休暇取得日等）</label>
+                <input type="date" id="baseDate">
+            </div>
+            <p class="note">※ 算定基準日の直前3ヶ月（起算日の前日から遡る）の給与データを入力してください。</p>
+        </div>
+
+        <!-- 過去3ヶ月の給与データ -->
+        <div class="card">
+            <h2>過去3ヶ月の給与データ</h2>
+
+            <div class="month-block">
+                <h3>直近第1月（最も新しい月）</h3>
+                <div class="form-group">
+                    <label>対象月</label>
+                    <input type="month" id="month1">
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>支給総額（円）</label>
+                        <input type="number" id="pay1" placeholder="0" min="0" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>暦日数（日）</label>
+                        <input type="number" id="days1" placeholder="31" min="1" max="31" oninput="calculate()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>実労働日数（日）</label>
+                    <input type="number" id="workdays1" placeholder="20" min="0" max="31" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="month-block">
+                <h3>直近第2月</h3>
+                <div class="form-group">
+                    <label>対象月</label>
+                    <input type="month" id="month2">
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>支給総額（円）</label>
+                        <input type="number" id="pay2" placeholder="0" min="0" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>暦日数（日）</label>
+                        <input type="number" id="days2" placeholder="30" min="1" max="31" oninput="calculate()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>実労働日数（日）</label>
+                    <input type="number" id="workdays2" placeholder="20" min="0" max="31" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="month-block">
+                <h3>直近第3月（最も古い月）</h3>
+                <div class="form-group">
+                    <label>対象月</label>
+                    <input type="month" id="month3">
+                </div>
+                <div class="row-2">
+                    <div class="form-group">
+                        <label>支給総額（円）</label>
+                        <input type="number" id="pay3" placeholder="0" min="0" oninput="calculate()">
+                    </div>
+                    <div class="form-group">
+                        <label>暦日数（日）</label>
+                        <input type="number" id="days3" placeholder="31" min="1" max="31" oninput="calculate()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>実労働日数（日）</label>
+                    <input type="number" id="workdays3" placeholder="21" min="0" max="31" oninput="calculate()">
+                </div>
+            </div>
+
+            <p class="note">
+                ※ 支給総額は基本給・各種手当を含む（残業代・賞与・通勤手当等の除外分がある場合は除いた額を入力）<br>
+                ※ 暦日数は各月の総日数（28〜31）を入力してください
+            </p>
+        </div>
+
+        <!-- 休日労働日数入力 -->
+        <div class="card">
+            <h2>休日労働日数（任意）</h2>
+            <p class="note" style="margin-bottom: 12px;">休日に実際に働いた日数を入力すると、支払うべき割増賃金総額を計算します。</p>
+            <div class="work-days-input">
+                <div>
+                    <span class="mini-label">法定休日労働（×1.35）<span class="badge badge-legal">法定</span></span>
+                    <input type="number" id="legalHolidayDays" placeholder="0" min="0" oninput="calculate()">
+                </div>
+                <div>
+                    <span class="mini-label">所定休日労働（×1.25）<span class="badge badge-contract">所定</span></span>
+                    <input type="number" id="contractHolidayDays" placeholder="0" min="0" oninput="calculate()">
+                </div>
+            </div>
+        </div>
+
+        <!-- 計算結果 -->
+        <div class="card">
+            <h2>計算結果</h2>
+            <div id="resultArea">
+                <div class="result-empty">上記フォームに給与データを入力すると<br>自動で計算されます</div>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 16px;">
+            <p class="note">
+                <strong>【計算根拠（労働基準法第12条）】</strong><br>
+                平均賃金 ＝ 過去3ヶ月の賃金総額 ÷ 過去3ヶ月の総暦日数<br>
+                最低保障額 ＝ 過去3ヶ月の賃金総額 ÷ 過去3ヶ月の総実労働日数 × 60%<br>
+                採用する平均賃金 ＝ いずれか高い方<br><br>
+                法定休日割増賃金 ＝ 平均賃金 × 1.35<br>
+                所定休日割増賃金 ＝ 平均賃金 × 1.25
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function fmt(n) {
+            return Math.round(n).toLocaleString('ja-JP') + ' 円';
+        }
+
+        function fmtRate(n) {
+            return n.toFixed(2) + ' 円';
+        }
+
+        function getDaysInMonth(yearMonth) {
+            if (!yearMonth) return null;
+            const [y, m] = yearMonth.split('-').map(Number);
+            return new Date(y, m, 0).getDate();
+        }
+
+        function autoFillDays() {
+            [1, 2, 3].forEach(i => {
+                const monthEl = document.getElementById('month' + i);
+                const daysEl = document.getElementById('days' + i);
+                const m = monthEl.value;
+                if (m && !daysEl.value) {
+                    daysEl.value = getDaysInMonth(m);
+                    calculate();
+                }
+            });
+        }
+
+        document.getElementById('month1').addEventListener('change', autoFillDays);
+        document.getElementById('month2').addEventListener('change', autoFillDays);
+        document.getElementById('month3').addEventListener('change', autoFillDays);
+        document.getElementById('baseDate').addEventListener('change', autoSuggestMonths);
+
+        function autoSuggestMonths() {
+            const baseDate = document.getElementById('baseDate').value;
+            if (!baseDate) return;
+            const d = new Date(baseDate);
+            // 起算日の前日から遡った3ヶ月
+            for (let i = 1; i <= 3; i++) {
+                const target = new Date(d.getFullYear(), d.getMonth() - (i - 1), 1);
+                const ym = target.getFullYear() + '-' + String(target.getMonth() + 1).padStart(2, '0');
+                const monthEl = document.getElementById('month' + i);
+                const daysEl = document.getElementById('days' + i);
+                if (!monthEl.value) {
+                    monthEl.value = ym;
+                    daysEl.value = getDaysInMonth(ym);
+                }
+            }
+            calculate();
+        }
+
+        function calculate() {
+            const pay1 = parseFloat(document.getElementById('pay1').value) || 0;
+            const pay2 = parseFloat(document.getElementById('pay2').value) || 0;
+            const pay3 = parseFloat(document.getElementById('pay3').value) || 0;
+            const days1 = parseInt(document.getElementById('days1').value) || 0;
+            const days2 = parseInt(document.getElementById('days2').value) || 0;
+            const days3 = parseInt(document.getElementById('days3').value) || 0;
+            const wd1 = parseInt(document.getElementById('workdays1').value) || 0;
+            const wd2 = parseInt(document.getElementById('workdays2').value) || 0;
+            const wd3 = parseInt(document.getElementById('workdays3').value) || 0;
+
+            const legalDays = parseFloat(document.getElementById('legalHolidayDays').value) || 0;
+            const contractDays = parseFloat(document.getElementById('contractHolidayDays').value) || 0;
+
+            const resultArea = document.getElementById('resultArea');
+
+            const totalPay = pay1 + pay2 + pay3;
+            const totalCalDays = days1 + days2 + days3;
+            const totalWorkDays = wd1 + wd2 + wd3;
+
+            if (totalPay === 0 || totalCalDays === 0) {
+                resultArea.innerHTML = '<div class="result-empty">上記フォームに給与データを入力すると<br>自動で計算されます</div>';
+                return;
+            }
+
+            // 平均賃金（暦日）
+            const avgWage = totalPay / totalCalDays;
+
+            // 最低保障平均賃金
+            const minAvgWage = totalWorkDays > 0 ? (totalPay / totalWorkDays) * 0.6 : 0;
+
+            // 採用する平均賃金
+            const adopted = Math.max(avgWage, minAvgWage);
+
+            // 休日割増
+            const legalRate = adopted * 1.35;
+            const contractRate = adopted * 1.25;
+
+            // 休日労働合計額
+            const legalTotal = legalRate * legalDays;
+            const contractTotal = contractRate * contractDays;
+            const grandTotal = legalTotal + contractTotal;
+
+            const showWarn = avgWage < minAvgWage;
+
+            let html = '';
+
+            if (showWarn) {
+                html += `<div class="alert alert-warn">⚠️ 最低保障額が通常の平均賃金を上回るため、最低保障額を採用します。</div>`;
+            }
+
+            html += `
+            <table class="result-table">
+                <tr>
+                    <th>3ヶ月合計支給額</th>
+                    <td>${fmt(totalPay)}</td>
+                </tr>
+                <tr>
+                    <th>3ヶ月合計暦日数</th>
+                    <td>${totalCalDays} 日</td>
+                </tr>
+                <tr>
+                    <th>3ヶ月合計実労働日数</th>
+                    <td>${totalWorkDays} 日</td>
+                </tr>
+            </table>
+            <hr class="section-divider">
+            <table class="result-table">
+                <tr>
+                    <th>平均賃金（暦日）</th>
+                    <td>${fmtRate(avgWage)}</td>
+                </tr>
+                <tr>
+                    <th>最低保障平均賃金</th>
+                    <td>${totalWorkDays > 0 ? fmtRate(minAvgWage) : '—'}</td>
+                </tr>
+                <tr class="highlight-row">
+                    <th>採用する平均賃金</th>
+                    <td>${fmtRate(adopted)}</td>
+                </tr>
+            </table>
+            <hr class="section-divider">
+            <table class="result-table">
+                <tr class="holiday-legal">
+                    <th>法定休日 1日分 <span class="badge badge-legal">×1.35</span></th>
+                    <td>${fmtRate(legalRate)}</td>
+                </tr>
+                <tr class="holiday-row">
+                    <th>所定休日 1日分 <span class="badge badge-contract">×1.25</span></th>
+                    <td>${fmtRate(contractRate)}</td>
+                </tr>
+            </table>`;
+
+            if (legalDays > 0 || contractDays > 0) {
+                html += `
+                <hr class="section-divider">
+                <h3>休日労働 割増賃金合計</h3>
+                <table class="result-table">`;
+
+                if (legalDays > 0) {
+                    html += `
+                    <tr class="holiday-legal">
+                        <th>法定休日 ${legalDays}日分</th>
+                        <td>${fmt(legalTotal)}</td>
+                    </tr>`;
+                }
+                if (contractDays > 0) {
+                    html += `
+                    <tr class="holiday-row">
+                        <th>所定休日 ${contractDays}日分</th>
+                        <td>${fmt(contractTotal)}</td>
+                    </tr>`;
+                }
+
+                html += `
+                    <tr class="highlight-row">
+                        <th>合計支払額</th>
+                        <td>${fmt(grandTotal)}</td>
+                    </tr>
+                </table>`;
+            }
+
+            resultArea.innerHTML = html;
+        }
+
+        // 初期値: 今日の日付を基準日にセット
+        window.addEventListener('load', () => {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('baseDate').value = `${yyyy}-${mm}-${dd}`;
+            autoSuggestMonths();
+        });
+    </script>
+</body>
+</html>
